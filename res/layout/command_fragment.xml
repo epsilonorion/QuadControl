@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/btnSendWaypoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Waypoints" />
+
+    <Button
+        android:id="@+id/btnStartMission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start Mission" />
+
+    <Button
+        android:id="@+id/btnPauseMission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pause Mission" />
+
+    <Button
+        android:id="@+id/btnHaltMission"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Halt Mission" />
+
+    <Button
+        android:id="@+id/btnReturnToBase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Return to Base" />
+
+</LinearLayout>

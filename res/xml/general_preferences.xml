@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Display" >
+        <ListPreference
+            android:defaultValue="Black Theme"
+            android:dialogTitle="Choose the Desired Display Theme"
+            android:entries="@array/themes"
+            android:entryValues="@array/themes"
+            android:key="theme_list"
+            android:summary="Click to choose desired Display Theme"
+            android:title="Display Theme" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Units" >
+        <ListPreference
+            android:defaultValue="WGS84"
+            android:dialogTitle="Choose the desired Coordinate Units"
+            android:entries="@array/coordinate_types"
+            android:entryValues="@array/coordinate_types"
+            android:key="coordinate_type_list"
+            android:summary="Click to choose desired Coordinate Units"
+            android:title="Coordinate Units" />
+
+        <CheckBoxPreference
+            android:defaultValue="FALSE"
+            android:key="si_units"
+            android:summary=""
+            android:title="SI Units" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

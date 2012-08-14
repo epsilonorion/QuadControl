@@ -1,0 +1,52 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Vehicle Parameters" >
+        <ListPreference
+            android:defaultValue="Ground"
+            android:dialogTitle="Choose the desired Vehicle Type"
+            android:entries="@array/vehicle_types"
+            android:entryValues="@array/vehicle_types"
+            android:key="vehicle_type_list"
+            android:summary="Click to choose desired Vehicle Type"
+            android:title="Vehicle Type" >
+        </ListPreference>
+        <EditTextPreference
+            android:defaultValue="25"
+            android:dialogTitle="Enter default Speed"
+            android:key="default_speed"
+            android:summary="Click to enter default speed"
+            android:title="Default Speed" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="10"
+            android:dialogTitle="Enter default altitude"
+            android:key="default_altitude"
+            android:summary="Click to enter default altitude"
+            android:title="Default Altitude" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="10"
+            android:dialogTitle="Enter default Hold Position time"
+            android:key="default_hold_time"
+            android:summary="Click to enter default hold position time"
+            android:title="Default Hold Position time" >
+        </EditTextPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Camera Parameters" >
+        <EditTextPreference
+            android:defaultValue="100"
+            android:dialogTitle="Enter default Pan Position"
+            android:key="default_pan_position"
+            android:summary="Click to enter default Pan position"
+            android:title="Default Pan Position" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="100"
+            android:dialogTitle="Enter default Tilt Position"
+            android:key="default_tilt_position"
+            android:summary="Click to enter default Tilt position"
+            android:title="Default Tilt Position" >
+        </EditTextPreference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

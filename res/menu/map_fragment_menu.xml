@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/mapmenu"
+        android:showAsAction="ifRoom|withText"
+        android:title="Map Settings">
+
+        <!-- "file" submenu -->
+        <menu>
+            <item
+                android:id="@+id/MapViewItem"
+                android:title="Map View">
+            </item>
+            <item
+                android:id="@+id/SatelliteViewItem"
+                android:title="Satellite View">
+            </item>
+
+            <item
+                android:id="@+id/mylocation"
+                android:icon="@drawable/mylocation"
+                android:title="Goto My Location">
+            </item>
+        </menu>
+    </item>
+
+</menu>

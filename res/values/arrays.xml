@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="themes">
+        <item>Black Theme</item>
+        <item>White Theme</item>
+    </string-array>
+    <string-array name="coordinate_types">
+        <item>WGS84</item>
+        <item>UTM</item>
+        <item>MGRS</item>
+    </string-array>
+    <string-array name="vehicle_types">
+        <item>Ground</item>
+        <item>QuadCopter</item>
+    </string-array>
+
+</resources>

@@ -1,0 +1,13 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <string name="app_name">QuadControl</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">QuadControl</string>
+    <item type="string" name="googlemaps_debug_key">0Ua5pucDQ2Bml67edum2ejesyVTAxQW5KewCWsQ</item>
+    <item type="string" name="googlemaps_release_key">0Ua5pucDQ2Bkn-Bgp0TfQdAm6CCcXVdBWJ2K1nQ</item>
+    <item type="string" name="googlemaps_linux_key">0Ua5pucDQ2BlLHjvnSuO9M7sQ-hzttdOD7hLqwQ</item>
+    <item type="string" name="googlemaps_linuxrelease_key">0Ua5pucDQ2BmxQEQeQevIbNskV4f4LAdvlshL7A</item>
+    <string name="menu_insert">Add Note</string>
+    <string name="menu_delete">Delete Note</string>
+
+</resources>
