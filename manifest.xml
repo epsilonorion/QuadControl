@@ -7,7 +7,6 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/quad_control</url>
 
-  <depend package="quadcontrol_msgs"/>
   <depend package="vehicle_control" />
   <depend package="robot_control" />
 </package>
