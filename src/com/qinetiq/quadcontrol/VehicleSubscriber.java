@@ -18,9 +18,20 @@ import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Subscriber;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 public class VehicleSubscriber implements NodeMain {
+	public VehicleStatus vehicleStatusObject;
+	StatusFragment statusFragment = null;
+
+	public VehicleSubscriber(VehicleStatus vehicleStatusObject,
+			StatusFragment statusFragment) {
+		this.vehicleStatusObject = vehicleStatusObject;
+		this.statusFragment = statusFragment;
+	}
 
 	@Override
 	public void onError(Node node, Throwable throwable) {
@@ -40,14 +51,43 @@ public class VehicleSubscriber implements NodeMain {
 	@Override
 	public void onStart(ConnectedNode connectedNode) {
 		Log.d("Start", "VehicleSubscriber Node Started");
-		Subscriber<std_msgs.String> subscriber = connectedNode.newSubscriber("josh",
-				std_msgs.String._TYPE);
-		subscriber.addMessageListener(new MessageListener<std_msgs.String>() {
-			@Override
-			public void onNewMessage(std_msgs.String message ) {
-				Log.d("error", message.getData());
-			}
-		});
+
+		Subscriber<vehicle_control.StatusInfo> subscriber = connectedNode
+				.newSubscriber("VehicleStatus", vehicle_control.StatusInfo._TYPE);
+		subscriber
+				.addMessageListener(new MessageListener<vehicle_control.StatusInfo>() {
+					@Override
+					public void onNewMessage(vehicle_control.StatusInfo message) {
+						Log.d("TEST", "New Status Message Received");
+
+						StatusInfo tempStatus = new StatusInfo();
+
+						tempStatus.setVehicleName(message.getVehicleName());
+						tempStatus.setLatitude(message.getLatitude() / 1e7);
+						tempStatus.setLongitude(message.getLongitude() / 1e7);
+						tempStatus.setHeading(message.getHeading() / 100);
+						tempStatus.setSpeed(message.getSpeed());
+						tempStatus.setAltitude(message.getAltitude());
+						tempStatus.setPanAngle(message.getPanAngle());
+						tempStatus.setTiltAngle(message.getTiltAngle());
+						tempStatus.setBatteryStatus(message.getBatteryStatus());
+						tempStatus.setGpsStatus(message.getGpsStatus());
+						tempStatus.setCurrWaypoint(message.getCurrWaypoint());
+
+						vehicleStatusObject.setVehicleStatus(tempStatus);
+
+						if (statusFragment != null) {
+							Handler uiHandler = statusFragment.UIHandler;
+
+							Bundle b = new Bundle();
+							b.putInt("VEHICLE_STATUS", 1);
+							Message msg = Message.obtain(uiHandler);
+							msg.setData(b);
+							msg.sendToTarget();
+						}
+
+					}
+				});
 
 	}
 

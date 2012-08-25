@@ -122,9 +122,9 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 
 		try {
 			// mediaPlayer.setDataSource("http://daily3gp.com/vids/747.3gp");
-			// ***mediaPlayer.setDataSource("/mnt/sdcard/Movies/thesalmondance.mp4");
-			mediaPlayer
-					.setDataSource("rtsp://v7.cache3.c.youtube.com/CjYLENy73wIaLQn3sbZMDCvMWxMYDSANFEIJbXYtZ29vZ2xlSARSBXdhdGNoYJLggLzG14qEUAw=/0/0/0/video.3gp");
+			mediaPlayer.setDataSource("/mnt/sdcard/Movies/video4.mp4");
+//			mediaPlayer
+//					.setDataSource("rtsp://v7.cache3.c.youtube.com/CjYLENy73wIaLQn3sbZMDCvMWxMYDSANFEIJbXYtZ29vZ2xlSARSBXdhdGNoYJLggLzG14qEUAw=/0/0/0/video.3gp");
 			// mediaPlayer.setDataSource("rtsp://v1.cache4.c.youtube.com/CjYLENy73wIaLQmEq1oCZGdlBRMYDSANFEIJbXYtZ29vZ2xlSARSBXdhdGNoYJLggLzG14qEUAw=/0/0/0/video.3gp");
 			// mediaPlayer.setDataSource("rtsp://v7.cache3.c.youtube.com/CjgLENy73wIaLwli69KYhrNlQRMYDSANFEIJbXYtZ29vZ2xlSARSB3JlbGF0ZWRg-Jei-PLGndxPDA==/0/0/0/video.3gp");
 			// mediaPlayer.setDataSource(getActivity().getApplicationContext(),

@@ -5,6 +5,12 @@
     android:orientation="vertical" >
 
     <Button
+        android:id="@+id/btnConnectVehicle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Connect To Vehicle" />
+
+    <Button
         android:id="@+id/btnSendWaypoints"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

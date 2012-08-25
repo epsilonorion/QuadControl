@@ -24,7 +24,6 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 	private static final long serialVersionUID = 1L;
 	MapFragment mapFragment = null;
 	WaypointListFragment wayptListFragment = null;
-	private int currentWaypoint = -1;
 
 	public WaypointList() {
 
@@ -76,12 +75,6 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 		return true;
 	}
 	
-	public synchronized boolean setCurrentWaypoint(int wayptPos) {
-		this.currentWaypoint = wayptPos;
-
-		return true;
-	}
-
 	@Override
 	public synchronized WaypointInfo remove(int wayptPos) {
 		updateClassesRemove(wayptPos);

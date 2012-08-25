@@ -44,10 +44,10 @@ import android.widget.RelativeLayout;
 import android.support.v4.view.ViewPager;
 
 public class MainActivity extends MapActivity {
-	//private VehicleSubscriber vehSub;
-	//private WaypointPublisher wayptPub;
-	//private ROSService testService;
-	private ROSClient testClient;
+	private VehicleSubscriber vehSub;
+	private WaypointClient wayptClient;
+	VehicleStatus vehicleStatusObject;
+	
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
 
@@ -85,14 +85,15 @@ public class MainActivity extends MapActivity {
 		}
 		setContentView(R.layout.main);
 
-		// Create WaypointList Object to be used in fragments and ROS Nodes
+		// Create Objects to be used in various fragments and ROS Nodes
 		WaypointList wayptObject = new WaypointList();
-
+		vehicleStatusObject = new VehicleStatus();
+		
 		// Setup Fragment Control for Application
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-		// Add Map Fragment
+		// Add Map Fragment and WayptObject Bundle
 		MapFragment mapFrag = new MapFragment();
 		Bundle mapFragBundle = new Bundle();
 		mapFragBundle.putParcelable("wayptObject", wayptObject);
@@ -118,15 +119,25 @@ public class MainActivity extends MapActivity {
 		wayptListFrag.setArguments(wayptListBundle);
 
 		StatusFragment statusFrag = new StatusFragment();
-
+		Bundle vehicleStatusBundle = new Bundle();
+		//vehicleStatusObject.setupStatusFragment(statusFrag);
+		vehicleStatusBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
+		statusFrag.setArguments(vehicleStatusBundle);
+		
+		// Create Command Fragment with vehicleStatusObject and wayptObject for ROSNodes
 		CommandFragment commandFrag = new CommandFragment();
+		Bundle commandFragBundle = new Bundle();
+		
+		commandFragBundle.putParcelable("wayptObject", wayptObject);
+		commandFragBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
+		commandFrag.setArguments(commandFragBundle);
 
 		List<Fragment> fragments = new Vector<Fragment>();
 		fragments.add(wayptEntryFrag);
 		fragments.add(wayptListFrag);
-		fragments.add(statusFrag);
 		fragments.add(commandFrag);
-
+		fragments.add(statusFrag);
+		
 		mAdapter = new ViewFragmentAdapter(getFragmentManager(), fragments);
 
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -148,18 +159,15 @@ public class MainActivity extends MapActivity {
 
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
-//		vehSub = new VehicleSubscriber();
-//		wayptPub = new WaypointPublisher();
-//		testService = new ROSService();
-		testClient = new ROSClient(wayptObject);
+		
+		//wayptClient = new WaypointClient(wayptObject);
 
 		// nodeMainExecutor.execute(vehSub, nodeConfiguration);
 		// nodeMainExecutor.execute(wayptPub, nodeConfiguration);
 		// nodeMainExecutor.execute(testService, nodeConfiguration);
-
 	}
 
-	// Handle inflation of Mene when menu button pressed
+	// Handle inflation of Menu when menu button pressed
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -215,8 +223,6 @@ public class MainActivity extends MapActivity {
 						ft.show(videoFrag);
 
 						maximizeMapFragFlag = false;
-
-						 nodeMainExecutor.shutdown();
 					} else {
 						// Maximize MapFragment
 						button.setImageResource(R.drawable.minimizesmall);
@@ -231,7 +237,11 @@ public class MainActivity extends MapActivity {
 						// vehSub = new VehicleSubscriber();
 //						 wayptPub = new WaypointPublisher();
 						// testService = new ROSNode();
-						// nodeMainExecutor.execute(vehSub, nodeConfiguration);
+						StatusFragment statusFragment = (StatusFragment) getFragmentManager()
+								.findFragmentByTag("android:switcher:" + R.id.pager + ":3");
+						
+						vehSub = new VehicleSubscriber(vehicleStatusObject, statusFragment);
+						 nodeMainExecutor.execute(vehSub, nodeConfiguration);
 //						 nodeMainExecutor.execute(wayptPub,
 //						 nodeConfiguration);
 						// nodeMainExecutor.execute(testService,
@@ -249,7 +259,7 @@ public class MainActivity extends MapActivity {
 						videoView.setVisibility(View.VISIBLE);
 						ft.show(mapFrag);
 						ft.show(videoFrag);
-						 nodeMainExecutor.shutdownNodeMain(testClient);
+//						 nodeMainExecutor.shutdownNodeMain(testClient);
 						maximizeDataFragFlag = false;
 					} else {
 						// Maximize dataFrag
@@ -262,8 +272,7 @@ public class MainActivity extends MapActivity {
 						ft.hide(mapFrag);
 						ft.hide(videoFrag);
 
-						 nodeMainExecutor.execute(testClient,
-						 nodeConfiguration);
+						//nodeMainExecutor.execute(wayptClient, nodeConfiguration);
 						maximizeDataFragFlag = true;
 					}
 					break;
@@ -277,7 +286,6 @@ public class MainActivity extends MapActivity {
 						LinearLayout dataView = (LinearLayout) findViewById(R.id.dataFragmentContainer);
 						dataView.setVisibility(View.VISIBLE);
 						ft.show(mapFrag);
-						// ft.show(dataFrag);
 
 						maximizeVideoFragFlag = false;
 					} else {
@@ -289,9 +297,10 @@ public class MainActivity extends MapActivity {
 						LinearLayout dataView = (LinearLayout) findViewById(R.id.dataFragmentContainer);
 						dataView.setVisibility(View.GONE);
 						ft.hide(mapFrag);
-						// ft.hide(dataFrag);
 
 						maximizeVideoFragFlag = true;
+						
+						nodeMainExecutor.shutdown();
 					}
 					break;
 				}

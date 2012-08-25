@@ -5,10 +5,10 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/lblStatusTitle"
+        android:id="@+id/lblVehicleNameValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Vehicle Information"
+        android:text="Vehicle Status"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/lblLatitudeStatus"
-            android:layout_width="70dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Latitude: " />
 
@@ -30,7 +30,7 @@
 
         <TextView
             android:id="@+id/lblLongitudeStatus"
-            android:layout_width="70dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Longitude: " />
 
@@ -48,7 +48,7 @@
 
         <TextView
             android:id="@+id/lblAltitudeStatus"
-            android:layout_width="70dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Altitude: " />
 
@@ -60,12 +60,108 @@
 
         <TextView
             android:id="@+id/lblHeadingStatus"
-            android:layout_width="70dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:text="Heading: " />
 
         <TextView
             android:id="@+id/lblHeadingStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblSpeedStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="Speed: " />
+
+        <TextView
+            android:id="@+id/lblSpeedStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblPanAngleStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="Pan Angle: " />
+
+        <TextView
+            android:id="@+id/lblPanAngleStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/lblTiltAngleStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="Tilt Angle: " />
+
+        <TextView
+            android:id="@+id/lblTiltAngleStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblBatteryStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="Battery: " />
+
+        <TextView
+            android:id="@+id/lblBatteryStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/lblGPSStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="GPS Stat: " />
+
+        <TextView
+            android:id="@+id/lblGPStatusValue"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/lblCurrWaypointStatus"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            android:text="CurrWaypt: " />
+
+        <TextView
+            android:id="@+id/lblCurrWaypointStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
             android:text="" />

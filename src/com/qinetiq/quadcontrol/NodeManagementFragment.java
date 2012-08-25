@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class NodeManagementFragment extends Fragment {
 	private VehicleSubscriber vehSub;
-	private WaypointPublisher wayptPub;
+	private CommandClient wayptPub;
 	private NodeMainExecutor nodeMainExecutor;
 	
 	@SuppressWarnings("unchecked")
