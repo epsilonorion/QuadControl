@@ -9,12 +9,16 @@
         <!-- "file" submenu -->
         <menu>
             <item
-                android:id="@+id/ShowImagesItem"
-                android:title="Show Images">
+                android:id="@+id/ShowSnapshotsItem"
+                android:title="Show Snapshots">
             </item>
             <item
-                android:id="@+id/ShowVideoItem"
-                android:title="Show Video">
+                android:id="@+id/Show320VideoItem"
+                android:title="Show 320x240 Video">
+            </item>
+            <item
+                android:id="@+id/Show640VideoItem"
+                android:title="Show 640x480 Video">
             </item>
             <item
                 android:id="@+id/LoadVideoItem"

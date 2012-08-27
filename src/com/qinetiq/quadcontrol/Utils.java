@@ -1,11 +1,15 @@
 package com.qinetiq.quadcontrol;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 public class Utils {
+	private static Context context;
+	
 	private static int sTheme;
 
+	
 	public final static int THEME_DEFAULT = 0;
     public final static int THEME_WHITE = 1;
     public final static int THEME_BLACK = 2;
@@ -37,5 +41,13 @@ public class Utils {
             activity.setTheme(R.style.BaseTheme);
             break;
         }
+	}
+
+	public static Context getContext() {
+		return context;
+	}
+
+	public static void setContext(Context context) {
+		Utils.context = context;
 	}
 }

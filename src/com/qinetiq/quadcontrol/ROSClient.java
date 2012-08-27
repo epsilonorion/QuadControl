@@ -1,6 +1,6 @@
 /**ROSClient.java*************************************************************
  *       Author : Joshua Weaver
- * Last Revised : August 13, 2012
+ * Last Revised : August 26, 2012
  *      Purpose : Test component for creating a ROS Client connection.
  *      		  Currently handles method of grabbing waypoint list and sends
  *      		  to ROS Node.
@@ -25,11 +25,9 @@ import org.ros.node.topic.Publisher;
 
 import com.google.common.collect.Lists;
 
-import android.os.RemoteException;
 import android.util.Log;
 
 public class ROSClient implements NodeMain {
-	private static final String SERVICE_NAME = "SendWaypoints";
 	private WaypointList wayptObject;
 
 	public ROSClient(WaypointList wayptObject) {

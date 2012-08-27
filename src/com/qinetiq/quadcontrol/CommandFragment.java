@@ -1,6 +1,6 @@
 /**CommandFragment.java*******************************************************
  *       Author : Joshua Weaver
- * Last Revised : August 13, 2012
+ * Last Revised : August 26, 2012
  *      Purpose : Class for controlling the Command Fragment.  Control
  *      		  involves receiving button presses from a user and sending
  *       		  these commands to a connected vehicle through ROS
@@ -17,6 +17,7 @@ import org.ros.address.InetAddressFactory;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+import org.ros.exception.ServiceNotFoundException;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -42,6 +43,8 @@ public class CommandFragment extends Fragment {
 
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
+
+	private MainApplication mainApp;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +85,8 @@ public class CommandFragment extends Fragment {
 		btnPauseMission.setOnClickListener(mAddListener);
 		btnHaltMission.setOnClickListener(mAddListener);
 		btnReturnToBase.setOnClickListener(mAddListener);
+
+		mainApp = (MainApplication) getActivity().getApplicationContext();
 	}
 
 	// Create an anonymous implementation of OnClickListener
@@ -90,7 +95,7 @@ public class CommandFragment extends Fragment {
 			switch (v.getId()) {
 
 			case R.id.btnConnectVehicle:
-				if (!ConnectedToVehicle) {
+				if (!mainApp.isConnectedToVehicle()) {
 					// Handle ROS Connect
 
 					// Grab preferences of the application
@@ -99,6 +104,13 @@ public class CommandFragment extends Fragment {
 
 					// Configure ROS Node connection with host ip and port
 					// addresses from preferences menu
+					// Grab nodeMainExecutor and nodeConfiguration from global
+					// set.
+					mainApp = (MainApplication) getActivity()
+							.getApplicationContext();
+					nodeMainExecutor = mainApp.getNodeMainExecutor();
+					nodeConfiguration = mainApp.getNodeConfiguration();
+
 					nodeConfiguration = NodeConfiguration
 							.newPublic(InetAddressFactory.newNonLoopback()
 									.getHostAddress());
@@ -107,16 +119,21 @@ public class CommandFragment extends Fragment {
 					Integer port = Integer.parseInt(prefs.getString("ros_port",
 							""));
 					URI uri = URI.create("http://" + hostMaster + ":" + port);
-					Log.d("Josh", uri.toString());
 					nodeConfiguration.setMasterUri(uri);
 
 					nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
+					// Set global variables to be used elsewhere.
+					mainApp.setNodeMainExecutor(nodeMainExecutor);
+					mainApp.setNodeConfiguration(nodeConfiguration);
+
 					StatusFragment statusFragment = (StatusFragment) getFragmentManager()
-							.findFragmentByTag("android:switcher:" + R.id.pager + ":3");
-					
+							.findFragmentByTag(
+									"android:switcher:" + R.id.pager + ":3");
+
 					// Create nodes
-					vehSub = new VehicleSubscriber(vehicleStatusObject, statusFragment);
+					vehSub = new VehicleSubscriber(vehicleStatusObject,
+							statusFragment);
 					// wayptPub = new WaypointPublisher();
 					// testService = new ROSService();
 					wayptClient = new WaypointClient(wayptListObject);
@@ -132,7 +149,7 @@ public class CommandFragment extends Fragment {
 							.findViewById(R.id.btnConnectVehicle);
 					btnConnectToVehicle.setText("Disconnect From Vehicle");
 
-					ConnectedToVehicle = true;
+					mainApp.setConnectedToVehicle(true);
 				} else {
 					// Shutdown Nodes
 					nodeMainExecutor.shutdown();
@@ -145,13 +162,13 @@ public class CommandFragment extends Fragment {
 							.findViewById(R.id.btnConnectVehicle);
 					btnConnectToVehicle.setText("Connect To Vehicle");
 
-					ConnectedToVehicle = false;
+					mainApp.setConnectedToVehicle(false);
 				}
 
 				break;
 
 			case R.id.btnSendWaypoints:
-				if (ConnectedToVehicle) {
+				if (mainApp.isConnectedToVehicle()) {
 					nodeMainExecutor.execute(wayptClient, nodeConfiguration);
 					nodeMainExecutor.shutdownNodeMain(wayptClient);
 
@@ -164,13 +181,14 @@ public class CommandFragment extends Fragment {
 				break;
 
 			case R.id.btnStartMission:
-				if (ConnectedToVehicle) {
-					commandClient = new CommandClient(0);
+				if (mainApp.isConnectedToVehicle()) {
+					commandClient = new CommandClient(0, getActivity());
+					Utils.setContext(getActivity());
 
 					nodeMainExecutor.execute(commandClient, nodeConfiguration);
 
-					Toast.makeText(getActivity(), "Starting Mission",
-							Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getActivity(), "Starting Mission",
+//							Toast.LENGTH_SHORT).show();
 
 				} else {
 					Toast.makeText(getActivity(), "Vehicle Not Connected",
@@ -179,8 +197,8 @@ public class CommandFragment extends Fragment {
 				break;
 
 			case R.id.btnPauseMission:
-				if (ConnectedToVehicle) {
-					commandClient = new CommandClient(1);
+				if (mainApp.isConnectedToVehicle()) {
+					commandClient = new CommandClient(1, getActivity());
 
 					nodeMainExecutor.execute(commandClient, nodeConfiguration);
 
@@ -195,11 +213,11 @@ public class CommandFragment extends Fragment {
 				break;
 
 			case R.id.btnHaltMission:
-				if (ConnectedToVehicle) {
-					commandClient = new CommandClient(2);
+				if (mainApp.isConnectedToVehicle()) {
+					commandClient = new CommandClient(2, getActivity());
 
 					nodeMainExecutor.execute(commandClient, nodeConfiguration);
-					
+
 					Toast.makeText(getActivity(), "Halting Mission",
 							Toast.LENGTH_SHORT).show();
 
@@ -210,11 +228,11 @@ public class CommandFragment extends Fragment {
 
 				break;
 			case R.id.btnReturnToBase:
-				if (ConnectedToVehicle) {
-					commandClient = new CommandClient(3);
+				if (mainApp.isConnectedToVehicle()) {
+					commandClient = new CommandClient(3, getActivity());
 
 					nodeMainExecutor.execute(commandClient, nodeConfiguration);
-					
+
 					Toast.makeText(getActivity(), "Returning to Base",
 							Toast.LENGTH_SHORT).show();
 
