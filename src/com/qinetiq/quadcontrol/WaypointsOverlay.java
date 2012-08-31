@@ -103,7 +103,8 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 					Double.parseDouble(prefs.getString("default_hold_time", "10")),
 					Double.parseDouble(prefs.getString("default_pan_position",
 							"100")), Double.parseDouble(prefs.getString(
-							"default_tilt_position", "100")));
+							"default_tilt_position", "100")), 
+							Double.parseDouble(prefs.getString("default_yaw_from", "0")));
 
 			// Add waypoint to waypoint list object
 			wayptList.add(waypt);

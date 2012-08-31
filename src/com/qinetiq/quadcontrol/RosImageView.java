@@ -69,13 +69,19 @@ public class RosImageView<T> extends ImageView implements NodeMain {
 				post(new Runnable() {
 					@Override
 					public void run() {
-						count++;
+						// Add to queue
+						
+						// If length = 10
+						// setImageBitmap (item)
+						// pop queue
+						
+					//	count++;
 						// TODO: HACK to allow smooth display. Must remove count
 						// value that is used to handle memory leak
-						if (count == 10) {
+					//	if (count == 10) {
 							setImageBitmap(callable.call(message));
-							count = 0;
-						}
+					//		count = 0;
+					//	}
 					}
 				});
 					postInvalidate();

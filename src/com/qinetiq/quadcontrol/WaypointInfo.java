@@ -19,6 +19,7 @@ public class WaypointInfo {
 	private double holdTime;
 	private double panAngle;
 	private double tiltAngle;
+	private double yawFrom;
 
 	public WaypointInfo() {
 		this.name = "EmptyMarker";
@@ -29,6 +30,7 @@ public class WaypointInfo {
 		this.holdTime = 0;
 		this.panAngle = 0;
 		this.tiltAngle = 0;
+		this.yawFrom = 0;
 	}
 
 	// Typical Constructor for Ground Vehicle
@@ -42,12 +44,13 @@ public class WaypointInfo {
 		this.holdTime = 0;
 		this.panAngle = 0;
 		this.tiltAngle = 0;
+		this.yawFrom = 0;
 	}
 
 	// Typical Constructor for Air Vehicle
 	public WaypointInfo(String name, double latitude, double longitude,
 			double speedTo, double altitude, double holdTime, double panAngle,
-			double tiltAngle) {
+			double tiltAngle, double yawFrom) {
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -56,6 +59,7 @@ public class WaypointInfo {
 		this.holdTime = holdTime;
 		this.panAngle = panAngle;
 		this.tiltAngle = tiltAngle;
+		this.yawFrom = yawFrom;
 	}
 
 	public String getName() {
@@ -120,5 +124,13 @@ public class WaypointInfo {
 
 	public void setTiltAngle(double tiltAngle) {
 		this.tiltAngle = tiltAngle;
+	}
+
+	public double getYawFrom() {
+		return yawFrom;
+	}
+
+	public void setYawFrom(double yawFrom) {
+		this.yawFrom = yawFrom;
 	}
 }

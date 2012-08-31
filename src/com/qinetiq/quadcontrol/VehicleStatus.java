@@ -29,7 +29,7 @@ public class VehicleStatus implements Parcelable {
 		vehicleStatus.setAltitude(in.readDouble());
 		vehicleStatus.setPanAngle(in.readDouble());
 		vehicleStatus.setTiltAngle(in.readDouble());
-		vehicleStatus.setBatteryStatus(in.readInt());
+		vehicleStatus.setBatteryStatus(in.readDouble());
 		vehicleStatus.setGpsStatus(in.readInt());
 		vehicleStatus.setCurrWaypoint(in.readInt());
 	}
@@ -44,7 +44,7 @@ public class VehicleStatus implements Parcelable {
 		out.writeDouble(vehicleStatus.getAltitude());
 		out.writeDouble(vehicleStatus.getPanAngle());
 		out.writeDouble(vehicleStatus.getTiltAngle());
-		out.writeInt(vehicleStatus.getBatteryStatus());
+		out.writeDouble(vehicleStatus.getBatteryStatus());
 		out.writeInt(vehicleStatus.getGpsStatus());
 		out.writeInt(vehicleStatus.getCurrWaypoint());
 	}

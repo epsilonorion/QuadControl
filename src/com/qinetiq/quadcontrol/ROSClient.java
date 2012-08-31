@@ -54,28 +54,29 @@ public class ROSClient implements NodeMain {
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
-		final Publisher<quadcontrol_msgs.WaypointTrajectory> publisher = connectedNode
+		final Publisher<vehicle_control.WaypointTrajectory> publisher = connectedNode
 				.newPublisher("WaypointTrajectory",
-						quadcontrol_msgs.WaypointTrajectory._TYPE);
+						vehicle_control.WaypointTrajectory._TYPE);
 
-		final Publisher<quadcontrol_msgs.Waypoint> wayptPublisher = connectedNode
-				.newPublisher("Waypoint", quadcontrol_msgs.Waypoint._TYPE);
+		final Publisher<vehicle_control.Waypoint> wayptPublisher = connectedNode
+				.newPublisher("Waypoint", vehicle_control.Waypoint._TYPE);
 
-		quadcontrol_msgs.WaypointTrajectory waypointList = publisher
+		vehicle_control.WaypointTrajectory waypointList = publisher
 				.newMessage();
-		List<quadcontrol_msgs.Waypoint> waypoints = Lists.newArrayList();
+		List<vehicle_control.Waypoint> waypoints = Lists.newArrayList();
 
 		WaypointInfo point;
-		quadcontrol_msgs.Waypoint waypt;
+		vehicle_control.Waypoint waypt;
 
 		for (int i = 0; i < wayptObject.size(); i++) {
 			point = wayptObject.get(i);
 
 			waypt = wayptPublisher.newMessage();
-			waypt.setLatitude(point.getLatitude());
-			waypt.setLongitude(point.getLongitude());
+			waypt.setLatitude((int)(point.getLatitude() * 1e7));
+			waypt.setLongitude((int)(point.getLongitude() * 1e7));
 			waypt.setSpeed((int) point.getSpeedTo());
-			waypt.setHoldTime((int) point.getHoldTime());
+			waypt.setHoldTime((short) point.getHoldTime());
+			waypt.setYawFrom((int)(point.getYawFrom() * 1000));
 
 			waypoints.add(waypt);
 		}
@@ -83,24 +84,24 @@ public class ROSClient implements NodeMain {
 		waypointList.setNumWaypts(waypoints.size());
 		waypointList.setPoints(waypoints);
 
-		ServiceClient<quadcontrol_msgs.SendWaypointsRequest, quadcontrol_msgs.SendWaypointsResponse> serviceClient;
+		ServiceClient<vehicle_control.SendWaypointsRequest, vehicle_control.SendWaypointsResponse> serviceClient;
 		try {
 			serviceClient = connectedNode.newServiceClient("send_waypoints",
-					"quadcontrol_msgs/SendWaypoints");
+					"vehicle_control/SendWaypoints");
 		} catch (ServiceNotFoundException e) {
 			throw new RosRuntimeException(e);
 		}
-		final quadcontrol_msgs.SendWaypointsRequest request = serviceClient
+		final vehicle_control.SendWaypointsRequest request = serviceClient
 				.newMessage();
 
 		request.setList(waypointList);
 
 		serviceClient
 				.call(request,
-						new ServiceResponseListener<quadcontrol_msgs.SendWaypointsResponse>() {
+						new ServiceResponseListener<vehicle_control.SendWaypointsResponse>() {
 							@Override
 							public void onSuccess(
-									quadcontrol_msgs.SendWaypointsResponse response) {
+									vehicle_control.SendWaypointsResponse response) {
 								connectedNode
 										.getLog()
 										.info(String

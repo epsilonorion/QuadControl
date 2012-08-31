@@ -73,10 +73,12 @@ public class WaypointClient implements NodeMain {
 			point = wayptObject.get(i);
 
 			waypt = wayptPublisher.newMessage();
-			waypt.setLatitude(point.getLatitude());
-			waypt.setLongitude(point.getLongitude());
+			waypt.setLatitude((int)(point.getLatitude() * 1e7));
+			waypt.setLongitude((int)(point.getLongitude() * 1e7));
 			waypt.setSpeed((int) point.getSpeedTo());
-			waypt.setHoldTime((int) point.getHoldTime());
+			waypt.setHoldTime((short) point.getHoldTime());
+			waypt.setHeight((int)point.getAltitude());
+			waypt.setYawFrom((int)(point.getYawFrom() * 1000));
 
 			waypoints.add(waypt);
 		}

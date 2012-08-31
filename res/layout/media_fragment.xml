@@ -8,8 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/marker" />
+        android:layout_centerVertical="true" />
 
     <SurfaceView
         android:id="@+id/surfaceview"

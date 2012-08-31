@@ -107,6 +107,7 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 			waypt.setHoldTime(in.readDouble());
 			waypt.setPanAngle(in.readDouble());
 			waypt.setTiltAngle(in.readDouble());
+			waypt.setYawFrom(in.readDouble());
 
 			this.add(waypt);
 		}
@@ -131,6 +132,7 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 			out.writeDouble(waypt.getHoldTime());
 			out.writeDouble(waypt.getPanAngle());
 			out.writeDouble(waypt.getTiltAngle());
+			out.writeDouble(waypt.getYawFrom());
 		}
 
 	}

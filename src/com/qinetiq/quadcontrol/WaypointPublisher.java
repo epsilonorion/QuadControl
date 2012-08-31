@@ -47,12 +47,12 @@ public class WaypointPublisher implements NodeMain {
 		
 		Log.d("Start", "WaypointPublisher Node Started");
 
-		final Publisher<quadcontrol_msgs.WaypointTrajectory> publisher = connectedNode
+		final Publisher<vehicle_control.WaypointTrajectory> publisher = connectedNode
 				.newPublisher("WaypointTrajectory",
-						quadcontrol_msgs.WaypointTrajectory._TYPE);
+						vehicle_control.WaypointTrajectory._TYPE);
 
-		final Publisher<quadcontrol_msgs.Waypoint> wayptPublisher = connectedNode
-				.newPublisher("Waypoint", quadcontrol_msgs.Waypoint._TYPE);
+		final Publisher<vehicle_control.Waypoint> wayptPublisher = connectedNode
+				.newPublisher("Waypoint", vehicle_control.Waypoint._TYPE);
 	
 		connectedNode.executeCancellableLoop(new CancellableLoop() {
 
@@ -62,17 +62,17 @@ public class WaypointPublisher implements NodeMain {
 
 			@Override
 			protected void loop() throws InterruptedException {
-				quadcontrol_msgs.WaypointTrajectory test = publisher
+				vehicle_control.WaypointTrajectory test = publisher
 						.newMessage();
 
-				List<quadcontrol_msgs.Waypoint> WayptL = Lists.newArrayList();
+				List<vehicle_control.Waypoint> WayptL = Lists.newArrayList();
 
-				quadcontrol_msgs.Waypoint waypt = wayptPublisher.newMessage();
+				vehicle_control.Waypoint waypt = wayptPublisher.newMessage();
 
 				waypt.setLatitude(0);
 				waypt.setLongitude(0);
 				waypt.setSpeed(0);
-				waypt.setHoldTime(0);
+				waypt.setHoldTime((short)0);
 
 				WayptL.add(waypt);
 
@@ -81,7 +81,7 @@ public class WaypointPublisher implements NodeMain {
 				waypt.setLatitude(1);
 				waypt.setLongitude(1);
 				waypt.setSpeed(1);
-				waypt.setHoldTime(1);
+				waypt.setHoldTime((short)1);
 
 				WayptL.add(waypt);
 
@@ -89,7 +89,7 @@ public class WaypointPublisher implements NodeMain {
 				waypt.setLatitude(2);
 				waypt.setLongitude(2);
 				waypt.setSpeed(2);
-				waypt.setHoldTime(2);
+				waypt.setHoldTime((short)2);
 
 				WayptL.add(waypt);
 
@@ -97,7 +97,7 @@ public class WaypointPublisher implements NodeMain {
 				waypt.setLatitude(3);
 				waypt.setLongitude(3);
 				waypt.setSpeed(3);
-				waypt.setHoldTime(3);
+				waypt.setHoldTime((short)3);
 
 				WayptL.add(waypt);
 
@@ -105,7 +105,7 @@ public class WaypointPublisher implements NodeMain {
 				waypt.setLatitude(4);
 				waypt.setLongitude(4);
 				waypt.setSpeed(4);
-				waypt.setHoldTime(4);
+				waypt.setHoldTime((short)4);
 
 				WayptL.add(waypt);
 

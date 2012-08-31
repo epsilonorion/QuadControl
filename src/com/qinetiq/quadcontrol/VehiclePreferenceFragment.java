@@ -24,12 +24,14 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 	public static final String KEY_DEFAULT_SPEED = "default_speed";
 	public static final String KEY_DEFAULT_ALTITUDE = "default_altitude";
 	public static final String KEY_DEFAULT_HOLD_TIME = "default_hold_time";
+	public static final String KEY_DEFAULT_YAW_FROM = "default_yaw_from";
 	public static final String KEY_DEFAULT_PAN_POSITION = "default_pan_position";
 	public static final String KEY_DEFAULT_TILT_POSITION = "default_tilt_position";
-
+	
 	private EditTextPreference mDefaultSpeed;
 	private EditTextPreference mDefaultAltitude;
 	private EditTextPreference mDefaultHoldTime;
+	private EditTextPreference mDefaultYawFrom;
 	private EditTextPreference mDefaultPanPosition;
 	private EditTextPreference mDefaultTiltPosition;
 
@@ -47,6 +49,8 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 				.findPreference(KEY_DEFAULT_ALTITUDE);
 		mDefaultHoldTime = (EditTextPreference) getPreferenceScreen()
 				.findPreference(KEY_DEFAULT_HOLD_TIME);
+		mDefaultYawFrom = (EditTextPreference) getPreferenceScreen()
+				.findPreference(KEY_DEFAULT_YAW_FROM);
 		mDefaultPanPosition = (EditTextPreference) getPreferenceScreen()
 				.findPreference(KEY_DEFAULT_PAN_POSITION);
 		mDefaultTiltPosition = (EditTextPreference) getPreferenceScreen()
@@ -68,6 +72,8 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 				+ prefs.getString(KEY_DEFAULT_ALTITUDE, ""));
 		mDefaultHoldTime.setSummary("Current default hold time is "
 				+ prefs.getString(KEY_DEFAULT_HOLD_TIME, ""));
+		mDefaultYawFrom.setSummary("Current default yaw from heading is "
+				+ prefs.getString(KEY_DEFAULT_YAW_FROM, ""));
 		mDefaultPanPosition.setSummary("Current default pan position is "
 				+ prefs.getString(KEY_DEFAULT_PAN_POSITION, ""));
 		mDefaultTiltPosition.setSummary("Current default tilt position is "
@@ -99,6 +105,9 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 					+ sharedPreferences.getString(key, ""));
 		} else if (key.equals(KEY_DEFAULT_HOLD_TIME)) {
 			mDefaultHoldTime.setSummary("Current default hold time is "
+					+ sharedPreferences.getString(key, ""));
+		} else if (key.equals(KEY_DEFAULT_YAW_FROM)) {
+			mDefaultYawFrom.setSummary("Current default yaw from heading is "
 					+ sharedPreferences.getString(key, ""));
 		} else if (key.equals(KEY_DEFAULT_PAN_POSITION)) {
 			mDefaultPanPosition.setSummary("Current default pan position is "

@@ -20,7 +20,7 @@ public class StatusInfo {
 	private double altitude;
 	private double panAngle;
 	private double tiltAngle;
-	private int batteryStatus;
+	private double batteryStatus;
 	private int gpsStatus;
 	private int currWaypoint;
 
@@ -102,11 +102,11 @@ public class StatusInfo {
 		this.tiltAngle = tiltAngle;
 	}
 
-	public int getBatteryStatus() {
+	public double getBatteryStatus() {
 		return batteryStatus;
 	}
 
-	public void setBatteryStatus(int batteryStatus) {
+	public void setBatteryStatus(double batteryStatus) {
 		this.batteryStatus = batteryStatus;
 	}
 
