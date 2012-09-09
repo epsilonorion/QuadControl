@@ -78,7 +78,7 @@ public class WaypointClient implements NodeMain {
 			waypt.setSpeed((int) point.getSpeedTo());
 			waypt.setHoldTime((short) point.getHoldTime());
 			waypt.setHeight((int)point.getAltitude());
-			waypt.setYawFrom((int)(point.getYawFrom() * 1000));
+			waypt.setYawFrom((int)(point.getYawFrom() * 100));
 
 			waypoints.add(waypt);
 		}

@@ -65,12 +65,12 @@ public class VehicleSubscriber implements NodeMain {
 						tempStatus.setVehicleName(message.getVehicleName());
 						tempStatus.setLatitude(message.getLatitude() / 1e7);
 						tempStatus.setLongitude(message.getLongitude() / 1e7);
-						tempStatus.setHeading(message.getHeading() / 1000);
+						tempStatus.setHeading(message.getHeading() / 1000.0);
 						tempStatus.setSpeed(message.getSpeed());
 						tempStatus.setAltitude(message.getAltitude());
 						tempStatus.setPanAngle(message.getPanAngle());
 						tempStatus.setTiltAngle(message.getTiltAngle());
-						tempStatus.setBatteryStatus(message.getBatteryStatus() / 1000);
+						tempStatus.setBatteryStatus(message.getBatteryStatus() / 1000.0);
 						tempStatus.setGpsStatus(message.getGpsStatus());
 						tempStatus.setCurrWaypoint(message.getCurrWaypoint());
 

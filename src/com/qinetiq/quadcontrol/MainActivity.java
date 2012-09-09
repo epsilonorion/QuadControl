@@ -102,6 +102,7 @@ public class MainActivity extends MapActivity {
 		MapFragment mapFrag = new MapFragment();
 		Bundle mapFragBundle = new Bundle();
 		mapFragBundle.putParcelable("wayptObject", wayptObject);
+		mapFragBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
 		mapFrag.setArguments(mapFragBundle);
 		transaction.replace(R.id.mapFragment, mapFrag);
 
@@ -163,6 +164,9 @@ public class MainActivity extends MapActivity {
 		nodeConfiguration.setMasterUri(uri);
 
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
+
+		MainApplication appState = ((MainApplication)getApplicationContext());
+	    appState.setTest(5);
 
 		
 		//wayptClient = new WaypointClient(wayptObject);

@@ -13,10 +13,13 @@
 
 package com.qinetiq.quadcontrol;
 
+import java.util.List;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
+import com.google.android.maps.Overlay;
 
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
@@ -29,10 +32,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		OnDrawerCloseListener {
@@ -41,11 +47,17 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 	private MyLocationOverlay myLocOverlay = null;
 	private WaypointsOverlay waypointsOverlay = null;
+	private VehicleOverlay vehicleOverlay = null;
 
 	boolean satelliteOn = true;
 	boolean maximizedOn = false;
 
 	private SlidingDrawerWrapper sd;
+
+	ToggleButton addButton;
+	ToggleButton deleteButton;
+	ToggleButton moveButton;
+	ToggleButton modifyButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,22 +71,32 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		// Handle Grabbing the WaypointList Object
 		WaypointList wayptList = null;
+		VehicleStatus statusInfo = null;
+		
 		Bundle bundle = getArguments();
 		if (bundle != null) {
 			wayptList = bundle.getParcelable("wayptObject");
+		}
+		if (bundle != null) {
+			statusInfo = bundle.getParcelable("vehicleStatusObject");
 		}
 
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapFragment);
 
 		wayptList.setupMapFragment(mapFragment);
-		
+
 		mapView = (MapView) getActivity().findViewById(R.id.mapView);
 		mapView.setBuiltInZoomControls(false);
 		mc = mapView.getController();
 		mc.setZoom(20);
 		mapView.setSatellite(satelliteOn);
-
+		List<Overlay> overlays = mapView.getOverlays();
+		
+		// Add vehicle overlay with R.id.quad drawable
+		vehicleOverlay = new VehicleOverlay(statusInfo, getActivity(), R.drawable.icon_air_vehicle);
+	    overlays.add(vehicleOverlay);
+		
 		// Add a Waypoint Overlay with marker to MapView
 		Drawable marker = getResources().getDrawable(R.drawable.marker);
 		int markerWidth = marker.getIntrinsicWidth();
@@ -84,8 +106,9 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		ImageView dragImage = (ImageView) getActivity().findViewById(R.id.drag);
 
 		// Grab handle for WaypointsListFragment
-//		WaypointListFragment wayptListFragment = (WaypointListFragment) getFragmentManager()
-//				.findFragmentById(R.id.waypointListFragment);
+		// WaypointListFragment wayptListFragment = (WaypointListFragment)
+		// getFragmentManager()
+		// .findFragmentById(R.id.waypointListFragment);
 		waypointsOverlay = new WaypointsOverlay(marker, dragImage,
 				getActivity(), wayptList);
 		mapView.getOverlays().add(waypointsOverlay);
@@ -98,17 +121,17 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		mapView.postInvalidate();
 
 		// Capture our button from layout
-		Button addButton = (Button) getActivity().findViewById(R.id.btnAdd);
-		Button deleteButton = (Button) getActivity().findViewById(
-				R.id.btnDelete);
-		Button moveButton = (Button) getActivity().findViewById(R.id.btnMove);
-		Button modifyButton = (Button) getActivity().findViewById(
-				R.id.btnModify);
+		addButton = (ToggleButton) getActivity().findViewById(R.id.btnAdd);
+		deleteButton = (ToggleButton) getActivity()
+				.findViewById(R.id.btnDelete);
+		moveButton = (ToggleButton) getActivity().findViewById(R.id.btnMove);
+		modifyButton = (ToggleButton) getActivity()
+				.findViewById(R.id.btnModify);
 
-		addButton.setOnClickListener(mAddListener);
-		deleteButton.setOnClickListener(mAddListener);
-		moveButton.setOnClickListener(mAddListener);
-		modifyButton.setOnClickListener(mAddListener);
+		addButton.setOnCheckedChangeListener(mAddListener);
+		deleteButton.setOnCheckedChangeListener(mAddListener);
+		moveButton.setOnCheckedChangeListener(mAddListener);
+		modifyButton.setOnCheckedChangeListener(mAddListener);
 
 		sd = (SlidingDrawerWrapper) getActivity().findViewById(R.id.sg_below);
 		sd.setOnDrawerOpenListener(this);
@@ -161,75 +184,89 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		return false;
 	}
 
-	// Create an anonymous implementation of OnClickListener
-	private OnClickListener mAddListener = new OnClickListener() {
-		public void onClick(View v) {
-			switch (v.getId()) {
+	private OnCheckedChangeListener mAddListener = new OnCheckedChangeListener() {
 
-			case R.id.btnAdd:
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			if (buttonView == addButton) {
 
-				if (waypointsOverlay.getAddWayptFlag()) {
-					waypointsOverlay.setAddWayptFlag(false);
-					waypointsOverlay.setDeleteWayptFlag(false);
-					waypointsOverlay.setMoveWayptFlag(false);
-					waypointsOverlay.setModifyWayptFlag(false);
-				} else {
+				if (isChecked) {
+					deleteButton.setChecked(false);
+					moveButton.setChecked(false);
+					modifyButton.setChecked(false);
+					
 					waypointsOverlay.setAddWayptFlag(true);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
 					waypointsOverlay.setModifyWayptFlag(false);
-				}
-
-				break;
-
-			case R.id.btnDelete:
-
-				if (waypointsOverlay.getDeleteWayptFlag()) {
+				} else {
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
 					waypointsOverlay.setModifyWayptFlag(false);
-				} else {
+				}
+
+			}
+
+			if (buttonView == deleteButton) {
+
+				if (isChecked) {
+					addButton.setChecked(false);
+					moveButton.setChecked(false);
+					modifyButton.setChecked(false);
+					
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(true);
 					waypointsOverlay.setMoveWayptFlag(false);
 					waypointsOverlay.setModifyWayptFlag(false);
-				}
-
-				break;
-
-			case R.id.btnMove:
-				if (waypointsOverlay.getMoveWayptFlag()) {
+				} else {
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
 					waypointsOverlay.setModifyWayptFlag(false);
-				} else {
+				}
+			}
+
+			if (buttonView == moveButton) {
+				if (isChecked) {
+					addButton.setChecked(false);
+					deleteButton.setChecked(false);
+					modifyButton.setChecked(false);
+					
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(true);
 					waypointsOverlay.setModifyWayptFlag(false);
-				}
-
-				break;
-
-			case R.id.btnModify:
-				if (waypointsOverlay.getModifyWayptFlag()) {
-					waypointsOverlay.setAddWayptFlag(false);
-					waypointsOverlay.setDeleteWayptFlag(false);
-					waypointsOverlay.setMoveWayptFlag(false);
-					waypointsOverlay.setModifyWayptFlag(false);
 				} else {
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
-					waypointsOverlay.setModifyWayptFlag(true);
+					waypointsOverlay.setModifyWayptFlag(false);
 				}
-				break;
 
 			}
 
+			if (buttonView == modifyButton) {
+				if (isChecked) {
+					addButton.setChecked(false);
+					deleteButton.setChecked(false);
+					moveButton.setChecked(false);
+					
+					waypointsOverlay.setAddWayptFlag(false);
+					waypointsOverlay.setDeleteWayptFlag(false);
+					waypointsOverlay.setMoveWayptFlag(false);
+					waypointsOverlay.setModifyWayptFlag(true);
+				} else {
+					waypointsOverlay.setAddWayptFlag(false);
+					waypointsOverlay.setDeleteWayptFlag(false);
+					waypointsOverlay.setMoveWayptFlag(false);
+					waypointsOverlay.setModifyWayptFlag(false);
+				}
+			}
+
 		}
+
 	};
 
 	public void gotoLocation(String latlng) {
@@ -250,11 +287,11 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	public void addWaypoint(WaypointInfo waypt) {
 		waypointsOverlay.addItem(waypt);
 	}
-	
+
 	public void modifyWaypoint(int wayptPos, WaypointInfo waypt) {
 		waypointsOverlay.modifyItem(wayptPos, waypt);
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -276,6 +313,11 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		Toast.makeText(getActivity(), "Finished Editing Markers",
 				Toast.LENGTH_SHORT).show();
+		
+		addButton.setChecked(false);
+		deleteButton.setChecked(false);
+		moveButton.setChecked(false);
+		modifyButton.setChecked(false);
 
 		waypointsOverlay.setAddWayptFlag(false);
 		waypointsOverlay.setDeleteWayptFlag(false);

@@ -26,7 +26,7 @@
         android:src="@drawable/marker"
         android:visibility="gone" >
     </ImageView>
-    
+
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
@@ -69,39 +69,45 @@
                     android:paddingTop="0dip"
                     android:src="@drawable/quickaction_slider_grip_left" />
 
-                <Button
+                <ToggleButton
                     android:id="@+id/btnAdd"
                     style="@style/ButtonNormalText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableTop="@drawable/icon_add"
-                    android:text="Add" >
-                </Button>
+                    android:textOn="Add"
+                    android:textOff="Add" >
+                </ToggleButton>
 
-                <Button
+                <ToggleButton
                     android:id="@+id/btnDelete"
                     style="@style/ButtonNormalText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableTop="@drawable/icon_delete"
-                    android:text="Delete" >
-                </Button>
+                    android:textOn="Delete"
+                    android:textOff="Delete" >
+                </ToggleButton>
 
-                <Button
+                <ToggleButton
                     android:id="@+id/btnMove"
                     style="@style/ButtonNormalText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableTop="@drawable/icon_move"
-                    android:text="Move" />
+                    android:textOn="Move"
+                    android:textOff="Move" >
+                </ToggleButton>
 
-                <Button
+                <ToggleButton
                     android:id="@+id/btnModify"
                     style="@style/ButtonNormalText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:drawableTop="@drawable/icon_info"
-                    android:text="Modify" />
+                    android:textOn="Modify" 
+                    android:textOff="Modify">
+                </ToggleButton>
 
                 <ImageView
                     android:layout_width="wrap_content"

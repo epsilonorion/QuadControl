@@ -78,6 +78,8 @@ public class StatusFragment extends Fragment {
 		CurrWaypointStatus = (TextView) getActivity().findViewById(
 				R.id.lblCurrWaypointStatusValue);
 
+		MainApplication appState = ((MainApplication)getActivity().getApplicationContext());
+		CurrWaypointStatus.setText("" + appState.getTest());
 		// // Grab preferences of the application
 		// SharedPreferences prefs = PreferenceManager
 		// .getDefaultSharedPreferences(getActivity());
