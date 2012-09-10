@@ -9,7 +9,7 @@
  * Dependencies : ViewFragmentAdapter, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
 
 import java.net.URI;
 
@@ -17,13 +17,20 @@ import org.ros.address.InetAddressFactory;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
-import org.ros.exception.ServiceNotFoundException;
+
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.WaypointList;
+import com.qinetiq.quadcontrol.ros.CommandClient;
+import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
+import com.qinetiq.quadcontrol.ros.WaypointClient;
+import com.qinetiq.quadcontrol.util.Utils;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,15 +63,10 @@ public class CommandFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		// Pull objects out of bundle
-		Bundle bundle = getArguments();
-		if (bundle != null) {
-			vehicleStatusObject = bundle.getParcelable("vehicleStatusObject");
-		}
-		if (bundle != null) {
-			wayptListObject = bundle.getParcelable("wayptObject");
-		}
-
+		mainApp = (MainApplication)getActivity().getApplicationContext();
+		wayptListObject = mainApp.getWayptList();
+		vehicleStatusObject = mainApp.getVehicleStatus();
+        
 		// Capture our button from layout
 		Button btnConnecToVehicle = (Button) getActivity().findViewById(
 				R.id.btnConnectVehicle);
@@ -85,8 +87,6 @@ public class CommandFragment extends Fragment {
 		btnPauseMission.setOnClickListener(mAddListener);
 		btnHaltMission.setOnClickListener(mAddListener);
 		btnReturnToBase.setOnClickListener(mAddListener);
-
-		mainApp = (MainApplication) getActivity().getApplicationContext();
 	}
 
 	// Create an anonymous implementation of OnClickListener
@@ -170,7 +170,7 @@ public class CommandFragment extends Fragment {
 			case R.id.btnSendWaypoints:
 				if (mainApp.isConnectedToVehicle()) {
 					nodeMainExecutor.execute(wayptClient, nodeConfiguration);
-					nodeMainExecutor.shutdownNodeMain(wayptClient);
+//					nodeMainExecutor.shutdownNodeMain(wayptClient);
 
 					Toast.makeText(getActivity(), "Sending Waypoints",
 							Toast.LENGTH_SHORT).show();

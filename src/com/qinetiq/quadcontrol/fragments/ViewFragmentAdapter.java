@@ -10,7 +10,7 @@
  ****************************************************************************/
 
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
 
 import java.util.List;
 

@@ -1,11 +1,12 @@
-package com.qinetiq.quadcontrol;
-
-import java.net.URI;
+package com.qinetiq.quadcontrol.fragments;
 
 import org.ros.address.InetAddressFactory;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+
+import com.qinetiq.quadcontrol.ros.CommandClient;
+import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;

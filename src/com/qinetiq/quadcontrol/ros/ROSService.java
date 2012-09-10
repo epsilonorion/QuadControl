@@ -9,7 +9,7 @@
  * Dependencies : ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import org.ros.exception.ServiceException;
 import org.ros.namespace.GraphName;

@@ -9,7 +9,7 @@
  * Dependencies : ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
@@ -17,6 +17,10 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Subscriber;
+
+import com.qinetiq.quadcontrol.StatusInfo;
+import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.fragments.StatusFragment;
 
 import android.os.Bundle;
 import android.os.Handler;

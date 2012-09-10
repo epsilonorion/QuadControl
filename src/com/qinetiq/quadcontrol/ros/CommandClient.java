@@ -8,7 +8,7 @@
  * Dependencies : CommandFragment, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import org.ros.exception.RosRuntimeException;
 import org.ros.exception.ServiceNotFoundException;

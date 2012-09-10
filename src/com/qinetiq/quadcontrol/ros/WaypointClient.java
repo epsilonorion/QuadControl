@@ -1,6 +1,6 @@
 /**ROSClient.java*************************************************************
  *       Author : Joshua Weaver
- * Last Revised : August 26, 2012
+ * Last Revised : August 13, 2012
  *      Purpose : Test component for creating a ROS Client connection.
  *      		  Currently handles method of grabbing waypoint list and sends
  *      		  to ROS Node.
@@ -9,7 +9,7 @@
  * Dependencies : WaypointList, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import java.util.List;
 
@@ -24,13 +24,16 @@ import org.ros.node.service.ServiceResponseListener;
 import org.ros.node.topic.Publisher;
 
 import com.google.common.collect.Lists;
+import com.qinetiq.quadcontrol.WaypointInfo;
+import com.qinetiq.quadcontrol.WaypointList;
 
+import android.os.RemoteException;
 import android.util.Log;
 
-public class ROSClient implements NodeMain {
+public class WaypointClient implements NodeMain {
 	private WaypointList wayptObject;
 
-	public ROSClient(WaypointList wayptObject) {
+	public WaypointClient(WaypointList wayptObject) {
 		this.wayptObject = wayptObject;
 	}
 
@@ -76,7 +79,8 @@ public class ROSClient implements NodeMain {
 			waypt.setLongitude((int)(point.getLongitude() * 1e7));
 			waypt.setSpeed((int) point.getSpeedTo());
 			waypt.setHoldTime((short) point.getHoldTime());
-			waypt.setYawFrom((int)(point.getYawFrom() * 1000));
+			waypt.setHeight((int)point.getAltitude());
+			waypt.setYawFrom((int)(point.getYawFrom() * 100));
 
 			waypoints.add(waypt);
 		}
@@ -89,6 +93,8 @@ public class ROSClient implements NodeMain {
 			serviceClient = connectedNode.newServiceClient("send_waypoints",
 					"vehicle_control/SendWaypoints");
 		} catch (ServiceNotFoundException e) {
+			Log.d("Error", "WaypointClient - Send_Waypoints Error");
+			
 			throw new RosRuntimeException(e);
 		}
 		final vehicle_control.SendWaypointsRequest request = serviceClient
@@ -108,13 +114,15 @@ public class ROSClient implements NodeMain {
 												.format("Returned number of waypoints %d",
 														response.getNumWaypts()));
 
-								Log.d("TEST", "Returned number of waypoints %d"
+								Log.d("TEST", "Returned number of waypoints "
 										+ response.getNumWaypts());
 							}
 
 							@Override
 							public void onFailure(
 									org.ros.exception.RemoteException e) {
+								Log.d("Error", "WaypointClient - Running onFailure return Error");
+								
 								throw new RosRuntimeException(e);
 							}
 						});
@@ -158,7 +166,7 @@ public class ROSClient implements NodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("android_qinetiq/client");
+		return GraphName.of("android_qinetiq/WaypointClient");
 	}
 
 }

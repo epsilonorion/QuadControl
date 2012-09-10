@@ -18,7 +18,6 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -230,7 +229,6 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 		lp.setMargins(x - xDragImageOffset - xDragTouchOffset, y
 				- yDragImageOffset - yDragTouchOffset, 0, 0);
 		
-		Log.d("Josh", "Width is " + lp.width + " Height is " + lp.height);
 		dragImage.setLayoutParams(lp);
 	}
 
@@ -249,6 +247,11 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public void removeItem(int index) {
 		overlayItemList.remove(index);
+		populate();
+	}
+	
+	public void clearItems() {
+		overlayItemList.clear();
 		populate();
 	}
 	

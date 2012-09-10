@@ -21,6 +21,16 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import com.google.android.maps.MapActivity;
+import com.qinetiq.quadcontrol.fragments.CommandFragment;
+import com.qinetiq.quadcontrol.fragments.MapFragment;
+import com.qinetiq.quadcontrol.fragments.MediaFragment;
+import com.qinetiq.quadcontrol.fragments.StatusFragment;
+import com.qinetiq.quadcontrol.fragments.ViewFragmentAdapter;
+import com.qinetiq.quadcontrol.fragments.WaypointEntryFragment;
+import com.qinetiq.quadcontrol.fragments.WaypointListFragment;
+import com.qinetiq.quadcontrol.preferences.PreferencesMenu;
+import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
+import com.qinetiq.quadcontrol.ros.WaypointClient;
 import com.viewpagerindicator.PageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
@@ -51,7 +61,7 @@ import android.support.v4.view.ViewPager;
 public class MainActivity extends MapActivity {
 	private VehicleSubscriber vehSub;
 	private WaypointClient wayptClient;
-	VehicleStatus vehicleStatusObject;
+	VehicleStatus vehicleStatus;
 	
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
@@ -91,57 +101,35 @@ public class MainActivity extends MapActivity {
 		setContentView(R.layout.main);
 
 		// Create Objects to be used in various fragments and ROS Nodes
-		WaypointList wayptObject = new WaypointList();
-		vehicleStatusObject = new VehicleStatus();
+		WaypointList wayptList = new WaypointList();
+		vehicleStatus = new VehicleStatus();
 		
 		// Setup Fragment Control for Application
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-		// Add Map Fragment and WayptObject Bundle
-		MapFragment mapFrag = new MapFragment();
-		Bundle mapFragBundle = new Bundle();
-		mapFragBundle.putParcelable("wayptObject", wayptObject);
-		mapFragBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
-		mapFrag.setArguments(mapFragBundle);
-		transaction.replace(R.id.mapFragment, mapFrag);
+		MainApplication mainApp = (MainApplication)getApplicationContext();
+        mainApp.setWayptList(wayptList);
+        mainApp.setVehicleStatus(vehicleStatus);
 
-		// Add Video Fragment
+		
+		// Replace Map and Video Fragments dynamically
+		MapFragment mapFrag = new MapFragment();
+		transaction.replace(R.id.mapFragment, mapFrag);
 		MediaFragment videoFrag = new MediaFragment();
 		transaction.replace(R.id.mediaFragment, videoFrag);
 		transaction.commit();
 
-		// Setup button listener for minmax button of each fragment
-		addShowHideListener(R.id.btnMinMaxMapFragment, mapFrag, videoFrag);
-		addShowHideListener(R.id.btnMinMaxDataFragment, mapFrag, videoFrag);
-		addShowHideListener(R.id.btnMinMaxMediaFragment, mapFrag, videoFrag);
-
-		// Add ViewPager and related Fragments
+		// Add ViewPager and Related Fragments
 		WaypointEntryFragment wayptEntryFrag = new WaypointEntryFragment();
-		
-		Bundle wayptListBundle = new Bundle();
-		wayptListBundle.putParcelable("wayptObject", wayptObject);
 		WaypointListFragment wayptListFrag = new WaypointListFragment();
-		wayptListFrag.setArguments(wayptListBundle);
-
 		StatusFragment statusFrag = new StatusFragment();
-		Bundle vehicleStatusBundle = new Bundle();
-		//vehicleStatusObject.setupStatusFragment(statusFrag);
-		vehicleStatusBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
-		statusFrag.setArguments(vehicleStatusBundle);
-		
-		// Create Command Fragment with vehicleStatusObject and wayptObject for ROSNodes
 		CommandFragment commandFrag = new CommandFragment();
-		Bundle commandFragBundle = new Bundle();
-		
-		commandFragBundle.putParcelable("wayptObject", wayptObject);
-		commandFragBundle.putParcelable("vehicleStatusObject", vehicleStatusObject);
-		commandFrag.setArguments(commandFragBundle);
 
 		List<Fragment> fragments = new Vector<Fragment>();
-		fragments.add(wayptEntryFrag);
-		fragments.add(wayptListFrag);
 		fragments.add(commandFrag);
+		fragments.add(wayptListFrag);
+		fragments.add(wayptEntryFrag);
 		fragments.add(statusFrag);
 		
 		mAdapter = new ViewFragmentAdapter(getFragmentManager(), fragments);
@@ -152,6 +140,11 @@ public class MainActivity extends MapActivity {
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
 		mIndicator.setViewPager(mPager);
 
+		// Setup button listener for minmax button of each fragment
+		addShowHideListener(R.id.btnMinMaxMapFragment, mapFrag, videoFrag);
+		addShowHideListener(R.id.btnMinMaxDataFragment, mapFrag, videoFrag);
+		addShowHideListener(R.id.btnMinMaxMediaFragment, mapFrag, videoFrag);
+		
 		// TODO Move to single class controlled by button connect
 		// Handle ROS Connect
 		nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory
@@ -165,10 +158,6 @@ public class MainActivity extends MapActivity {
 
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
-		MainApplication appState = ((MainApplication)getApplicationContext());
-	    appState.setTest(5);
-
-		
 		//wayptClient = new WaypointClient(wayptObject);
 
 		// nodeMainExecutor.execute(vehSub, nodeConfiguration);
@@ -243,18 +232,18 @@ public class MainActivity extends MapActivity {
 
 						maximizeMapFragFlag = true;
 
-						// vehSub = new VehicleSubscriber();
-//						 wayptPub = new WaypointPublisher();
-						// testService = new ROSNode();
-						StatusFragment statusFragment = (StatusFragment) getFragmentManager()
-								.findFragmentByTag("android:switcher:" + R.id.pager + ":3");
-						
-						vehSub = new VehicleSubscriber(vehicleStatusObject, statusFragment);
-						 nodeMainExecutor.execute(vehSub, nodeConfiguration);
-//						 nodeMainExecutor.execute(wayptPub,
-//						 nodeConfiguration);
-						// nodeMainExecutor.execute(testService,
-						// nodeConfiguration);
+//						// vehSub = new VehicleSubscriber();
+////						 wayptPub = new WaypointPublisher();
+//						// testService = new ROSNode();
+//						StatusFragment statusFragment = (StatusFragment) getFragmentManager()
+//								.findFragmentByTag("android:switcher:" + R.id.pager + ":3");
+//						
+//						vehSub = new VehicleSubscriber(vehicleStatus, statusFragment);
+//						 nodeMainExecutor.execute(vehSub, nodeConfiguration);
+////						 nodeMainExecutor.execute(wayptPub,
+////						 nodeConfiguration);
+//						// nodeMainExecutor.execute(testService,
+//						// nodeConfiguration);
 					}
 					break;
 				case R.id.btnMinMaxDataFragment:
@@ -268,7 +257,6 @@ public class MainActivity extends MapActivity {
 						videoView.setVisibility(View.VISIBLE);
 						ft.show(mapFrag);
 						ft.show(videoFrag);
-//						 nodeMainExecutor.shutdownNodeMain(testClient);
 						maximizeDataFragFlag = false;
 					} else {
 						// Maximize dataFrag
@@ -281,7 +269,6 @@ public class MainActivity extends MapActivity {
 						ft.hide(mapFrag);
 						ft.hide(videoFrag);
 
-						//nodeMainExecutor.execute(wayptClient, nodeConfiguration);
 						maximizeDataFragFlag = true;
 					}
 					break;

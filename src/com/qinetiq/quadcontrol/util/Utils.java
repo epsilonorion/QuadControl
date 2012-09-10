@@ -1,4 +1,7 @@
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.util;
+
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.R.style;
 
 import android.app.Activity;
 import android.content.Context;

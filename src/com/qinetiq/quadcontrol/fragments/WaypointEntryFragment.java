@@ -9,7 +9,10 @@
  * Dependencies : ViewFragmentAdapter, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
+
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.R.layout;
 
 import android.app.Fragment;
 import android.os.Bundle;

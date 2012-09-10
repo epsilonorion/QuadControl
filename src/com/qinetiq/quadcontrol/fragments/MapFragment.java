@@ -11,7 +11,7 @@
  * Dependencies : SlidingDrawerWrapper, WaypointsOverlay
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
 
 import java.util.List;
 
@@ -20,6 +20,15 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.RouteOverlay;
+import com.qinetiq.quadcontrol.VehicleOverlay;
+import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.WaypointInfo;
+import com.qinetiq.quadcontrol.WaypointList;
+import com.qinetiq.quadcontrol.WaypointsOverlay;
+import com.qinetiq.quadcontrol.util.SlidingDrawerWrapper;
 
 import android.app.Fragment;
 import android.graphics.drawable.Drawable;
@@ -45,6 +54,9 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	private MapView mapView = null;
 	private MapController mc = null;
 
+	private WaypointList wayptList = null;
+	private VehicleStatus statusInfo = null;
+	
 	private MyLocationOverlay myLocOverlay = null;
 	private WaypointsOverlay waypointsOverlay = null;
 	private VehicleOverlay vehicleOverlay = null;
@@ -58,6 +70,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	ToggleButton deleteButton;
 	ToggleButton moveButton;
 	ToggleButton modifyButton;
+	Button clearButton;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,17 +82,10 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	public void onStart() {
 		super.onStart();
 
-		// Handle Grabbing the WaypointList Object
-		WaypointList wayptList = null;
-		VehicleStatus statusInfo = null;
-		
-		Bundle bundle = getArguments();
-		if (bundle != null) {
-			wayptList = bundle.getParcelable("wayptObject");
-		}
-		if (bundle != null) {
-			statusInfo = bundle.getParcelable("vehicleStatusObject");
-		}
+		MainApplication mainApp = (MainApplication) getActivity()
+				.getApplicationContext();
+		wayptList = mainApp.getWayptList();
+		statusInfo = mainApp.getVehicleStatus();
 
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapFragment);
@@ -92,11 +98,12 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		mc.setZoom(20);
 		mapView.setSatellite(satelliteOn);
 		List<Overlay> overlays = mapView.getOverlays();
-		
+
 		// Add vehicle overlay with R.id.quad drawable
-		vehicleOverlay = new VehicleOverlay(statusInfo, getActivity(), R.drawable.icon_air_vehicle);
-	    overlays.add(vehicleOverlay);
-		
+		vehicleOverlay = new VehicleOverlay(statusInfo, getActivity(),
+				R.drawable.icon_air_vehicle);
+		overlays.add(vehicleOverlay);
+
 		// Add a Waypoint Overlay with marker to MapView
 		Drawable marker = getResources().getDrawable(R.drawable.marker);
 		int markerWidth = marker.getIntrinsicWidth();
@@ -111,13 +118,17 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		// .findFragmentById(R.id.waypointListFragment);
 		waypointsOverlay = new WaypointsOverlay(marker, dragImage,
 				getActivity(), wayptList);
-		mapView.getOverlays().add(waypointsOverlay);
+		overlays.add(waypointsOverlay);
 
 		// Add Mylocation Overlay to MapView
 		myLocOverlay = new MyLocationOverlay(getActivity(), mapView);
 		myLocOverlay.enableMyLocation();
 		myLocOverlay.enableCompass();
-		mapView.getOverlays().add(myLocOverlay);
+		overlays.add(myLocOverlay);
+
+		// Add Route Overlay to MapView
+		RouteOverlay routeOverlay = new RouteOverlay(wayptList);
+		overlays.add(routeOverlay);
 		mapView.postInvalidate();
 
 		// Capture our button from layout
@@ -127,11 +138,13 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		moveButton = (ToggleButton) getActivity().findViewById(R.id.btnMove);
 		modifyButton = (ToggleButton) getActivity()
 				.findViewById(R.id.btnModify);
+		clearButton = (Button) getActivity().findViewById(R.id.btnClear);
 
-		addButton.setOnCheckedChangeListener(mAddListener);
-		deleteButton.setOnCheckedChangeListener(mAddListener);
-		moveButton.setOnCheckedChangeListener(mAddListener);
-		modifyButton.setOnCheckedChangeListener(mAddListener);
+		addButton.setOnCheckedChangeListener(mCheckedListener);
+		deleteButton.setOnCheckedChangeListener(mCheckedListener);
+		moveButton.setOnCheckedChangeListener(mCheckedListener);
+		modifyButton.setOnCheckedChangeListener(mCheckedListener);
+		clearButton.setOnClickListener(mClickListener);
 
 		sd = (SlidingDrawerWrapper) getActivity().findViewById(R.id.sg_below);
 		sd.setOnDrawerOpenListener(this);
@@ -184,7 +197,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		return false;
 	}
 
-	private OnCheckedChangeListener mAddListener = new OnCheckedChangeListener() {
+	private OnCheckedChangeListener mCheckedListener = new OnCheckedChangeListener() {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,
@@ -195,7 +208,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 					deleteButton.setChecked(false);
 					moveButton.setChecked(false);
 					modifyButton.setChecked(false);
-					
+
 					waypointsOverlay.setAddWayptFlag(true);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
@@ -215,7 +228,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 					addButton.setChecked(false);
 					moveButton.setChecked(false);
 					modifyButton.setChecked(false);
-					
+
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(true);
 					waypointsOverlay.setMoveWayptFlag(false);
@@ -233,7 +246,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 					addButton.setChecked(false);
 					deleteButton.setChecked(false);
 					modifyButton.setChecked(false);
-					
+
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(true);
@@ -252,7 +265,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 					addButton.setChecked(false);
 					deleteButton.setChecked(false);
 					moveButton.setChecked(false);
-					
+
 					waypointsOverlay.setAddWayptFlag(false);
 					waypointsOverlay.setDeleteWayptFlag(false);
 					waypointsOverlay.setMoveWayptFlag(false);
@@ -267,6 +280,18 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		}
 
+	};
+
+	// Create an anonymous implementation of OnClickListener
+	private OnClickListener mClickListener = new OnClickListener() {
+		public void onClick(View v) {
+			switch (v.getId()) {
+
+			case R.id.btnClear:
+				wayptList.clear();
+				break;
+			}
+		}
 	};
 
 	public void gotoLocation(String latlng) {
@@ -291,6 +316,12 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	public void modifyWaypoint(int wayptPos, WaypointInfo waypt) {
 		waypointsOverlay.modifyItem(wayptPos, waypt);
 	}
+	
+	public void clearWaypoints() {
+		waypointsOverlay.clearItems();
+		
+		mapView.postInvalidate();
+	}
 
 	@Override
 	public void onResume() {
@@ -313,7 +344,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		Toast.makeText(getActivity(), "Finished Editing Markers",
 				Toast.LENGTH_SHORT).show();
-		
+
 		addButton.setChecked(false);
 		deleteButton.setChecked(false);
 		moveButton.setChecked(false);

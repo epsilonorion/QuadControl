@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PreferencesMenu"
+            android:name=".preferences.PreferencesMenu"
             android:screenOrientation="sensorLandscape"
             android:label="@string/app_name" >
         </activity>

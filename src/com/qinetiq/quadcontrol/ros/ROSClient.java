@@ -1,6 +1,6 @@
 /**ROSClient.java*************************************************************
  *       Author : Joshua Weaver
- * Last Revised : August 13, 2012
+ * Last Revised : August 26, 2012
  *      Purpose : Test component for creating a ROS Client connection.
  *      		  Currently handles method of grabbing waypoint list and sends
  *      		  to ROS Node.
@@ -9,7 +9,7 @@
  * Dependencies : WaypointList, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import java.util.List;
 
@@ -24,14 +24,15 @@ import org.ros.node.service.ServiceResponseListener;
 import org.ros.node.topic.Publisher;
 
 import com.google.common.collect.Lists;
+import com.qinetiq.quadcontrol.WaypointInfo;
+import com.qinetiq.quadcontrol.WaypointList;
 
-import android.os.RemoteException;
 import android.util.Log;
 
-public class WaypointClient implements NodeMain {
+public class ROSClient implements NodeMain {
 	private WaypointList wayptObject;
 
-	public WaypointClient(WaypointList wayptObject) {
+	public ROSClient(WaypointList wayptObject) {
 		this.wayptObject = wayptObject;
 	}
 
@@ -77,8 +78,7 @@ public class WaypointClient implements NodeMain {
 			waypt.setLongitude((int)(point.getLongitude() * 1e7));
 			waypt.setSpeed((int) point.getSpeedTo());
 			waypt.setHoldTime((short) point.getHoldTime());
-			waypt.setHeight((int)point.getAltitude());
-			waypt.setYawFrom((int)(point.getYawFrom() * 100));
+			waypt.setYawFrom((int)(point.getYawFrom() * 1000));
 
 			waypoints.add(waypt);
 		}
@@ -110,7 +110,7 @@ public class WaypointClient implements NodeMain {
 												.format("Returned number of waypoints %d",
 														response.getNumWaypts()));
 
-								Log.d("TEST", "Returned number of waypoints "
+								Log.d("TEST", "Returned number of waypoints %d"
 										+ response.getNumWaypts());
 							}
 
@@ -160,7 +160,7 @@ public class WaypointClient implements NodeMain {
 
 	@Override
 	public GraphName getDefaultNodeName() {
-		return GraphName.of("android_qinetiq/WaypointClient");
+		return GraphName.of("android_qinetiq/client");
 	}
 
 }

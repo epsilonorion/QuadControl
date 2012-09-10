@@ -35,7 +35,7 @@
         android:gravity="bottom|center"
         android:orientation="vertical" >
 
-        <com.qinetiq.quadcontrol.SlidingDrawerWrapper
+        <com.qinetiq.quadcontrol.util.SlidingDrawerWrapper
             android:id="@+id/sg_below"
             android:layout_width="wrap_content"
             android:layout_height="120dp"
@@ -109,13 +109,22 @@
                     android:textOff="Modify">
                 </ToggleButton>
 
+                <Button
+                    android:id="@+id/btnClear"
+                    style="@style/ButtonNormalText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@drawable/icon_info"
+                    android:text="Clear" >
+                </Button>
+                
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="Right Grip image for slider drawer buttons"
                     android:src="@drawable/quickaction_slider_grip_right" />
             </LinearLayout>
-        </com.qinetiq.quadcontrol.SlidingDrawerWrapper>
+        </com.qinetiq.quadcontrol.util.SlidingDrawerWrapper>
     </LinearLayout>
 
 </RelativeLayout>

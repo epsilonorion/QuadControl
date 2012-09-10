@@ -9,7 +9,14 @@
  * Dependencies : ViewFragmentAdapter, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
+
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.StatusInfo;
+import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.R.id;
+import com.qinetiq.quadcontrol.R.layout;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -46,12 +53,9 @@ public class StatusFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		// Handle Grabbing the VehicleStatus Object
-		Bundle bundle = getArguments();
-		if (bundle != null) {
-			vehicleStatus = bundle.getParcelable("vehicleStatusObject");
-		}
-
+		MainApplication mainApp = (MainApplication)getActivity().getApplicationContext();
+		vehicleStatus = mainApp.getVehicleStatus();
+        
 		VehicleNameStatus = (TextView) getActivity().findViewById(
 				R.id.lblVehicleNameValue);
 
@@ -77,38 +81,30 @@ public class StatusFragment extends Fragment {
 				.findViewById(R.id.lblGPStatusValue);
 		CurrWaypointStatus = (TextView) getActivity().findViewById(
 				R.id.lblCurrWaypointStatusValue);
+		
+		if (vehicleStatus != null) {
+			StatusInfo vehicleStatusInfo = vehicleStatus.getVehicleStatus();
 
-		MainApplication appState = ((MainApplication)getActivity().getApplicationContext());
-		CurrWaypointStatus.setText("" + appState.getTest());
-		// // Grab preferences of the application
-		// SharedPreferences prefs = PreferenceManager
-		// .getDefaultSharedPreferences(getActivity());
-		//
-		// VehicleSubscriber vehSub;
-		//
-		// NodeMainExecutor nodeMainExecutor;
-		// NodeConfiguration nodeConfiguration;
-		//
-		// nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory
-		// .newNonLoopback().getHostAddress());
-		//
-		// String hostMaster = prefs.getString("ros_IP", "");
-		// Integer port = Integer.parseInt(prefs.getString("ros_port", ""));
-		// URI uri = URI.create("http://" + hostMaster + ":" + port);
-		// Log.d("Josh", uri.toString());
-		// nodeConfiguration.setMasterUri(uri);
-		//
-		// nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-		//
-		// vehSub = new VehicleSubscriber(vehicleStatus, statusFragment);
-		//
-		// nodeMainExecutor.execute(vehSub, nodeConfiguration);
+			VehicleNameStatus.setText(vehicleStatusInfo.getVehicleName()
+					+ " Status");
 
+			LatitudeStatus.setText("" + vehicleStatusInfo.getLatitude());
+			LongitudeStatus.setText("" + vehicleStatusInfo.getLongitude());
+			AltitudeStatus.setText("" + vehicleStatusInfo.getAltitude());
+			HeadingStatus.setText("" + vehicleStatusInfo.getHeading());
+
+			SpeedStatus.setText("" + vehicleStatusInfo.getSpeed());
+			PanAngleStatus.setText("" + vehicleStatusInfo.getPanAngle());
+			TiltAngleStatus.setText("" + vehicleStatusInfo.getTiltAngle());
+			BatteryStatus.setText("" + vehicleStatusInfo.getBatteryStatus());
+
+			GPSStatus.setText("" + vehicleStatusInfo.getGpsStatus());
+			CurrWaypointStatus
+					.setText("" + vehicleStatusInfo.getCurrWaypoint());
+		}
 	}
 
 	public void updateText() {
-		Log.d("TEST", "I GOT HERE");
-
 		if (vehicleStatus != null) {
 			StatusInfo vehicleStatusInfo = vehicleStatus.getVehicleStatus();
 

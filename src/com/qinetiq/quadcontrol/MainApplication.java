@@ -10,9 +10,8 @@ public class MainApplication extends Application {
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
 
-	private StatusInfo statusInfo;
-	
-	private int test;
+	private VehicleStatus vehicleStatus;
+	private WaypointList wayptList;
 
 	private boolean ConnectedToVehicle = false;
 
@@ -38,12 +37,20 @@ public class MainApplication extends Application {
 		this.nodeConfiguration = nodeConfiguration;
 	}
 
-	public StatusInfo getStatusInfo() {
-		return statusInfo;
+	public VehicleStatus getVehicleStatus() {
+		return vehicleStatus;
 	}
 
-	public void setStatusInfo(StatusInfo statusInfo) {
-		this.statusInfo = statusInfo;
+	public void setVehicleStatus(VehicleStatus vehicleStatus) {
+		this.vehicleStatus = vehicleStatus;
+	}
+
+	public WaypointList getWayptList() {
+		return wayptList;
+	}
+
+	public void setWayptList(WaypointList wayptList) {
+		this.wayptList = wayptList;
 	}
 
 	public boolean isConnectedToVehicle() {
@@ -53,14 +60,4 @@ public class MainApplication extends Application {
 	public void setConnectedToVehicle(boolean connectedToVehicle) {
 		ConnectedToVehicle = connectedToVehicle;
 	}
-
-	public int getTest() {
-		return test;
-	}
-
-	public void setTest(int test) {
-		this.test = test;
-	}
-
-	
 }

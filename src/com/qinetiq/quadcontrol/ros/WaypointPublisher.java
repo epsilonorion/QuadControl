@@ -9,7 +9,7 @@
  * Dependencies : WaypointList, ROSJava, Android-Core
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.ros;
 
 import java.util.Arrays;
 import java.util.List;

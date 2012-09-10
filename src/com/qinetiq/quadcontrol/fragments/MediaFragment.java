@@ -9,13 +9,18 @@
  *          XML : res->layout->media_fragment
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
 
 import java.io.IOException;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
+
+import com.qinetiq.quadcontrol.MainActivity;
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.RosImageView;
 
 import android.app.Fragment;
 import android.media.MediaPlayer;
@@ -31,7 +36,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 
 public class MediaFragment extends Fragment implements SurfaceHolder.Callback {

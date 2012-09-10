@@ -10,9 +10,13 @@
  * Dependencies : 
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.preferences;
 
 import java.util.List;
+
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.R.style;
+import com.qinetiq.quadcontrol.R.xml;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

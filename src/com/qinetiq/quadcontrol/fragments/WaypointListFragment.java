@@ -9,9 +9,14 @@
  * Dependencies : ViewFragmentAdapter
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.fragments;
 
 import java.util.ArrayList;
+
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.WaypointInfo;
+import com.qinetiq.quadcontrol.WaypointList;
 
 import android.app.ListFragment;
 import android.os.Bundle;
@@ -43,12 +48,9 @@ public class WaypointListFragment extends ListFragment {
 		adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_list_item_1, list);
 		setListAdapter(adapter);
-
-		// Handle Grabbing the WaypointList Object
-		Bundle bundle = getArguments();
-		if (bundle != null) {
-			wayptList = bundle.getParcelable("wayptObject");
-		}
+		
+		MainApplication mainApp = (MainApplication)getActivity().getApplicationContext();
+        wayptList=mainApp.getWayptList();
 		
 		// Old Method of Grabbing fragment
 //		WaypointListFragment wayptListFragment = (WaypointListFragment) getFragmentManager()
@@ -129,6 +131,18 @@ public class WaypointListFragment extends ListFragment {
 				+ String.valueOf(waypt.getLongitude());
 		modifyItem(wayptPos, latlng);
 	}
+
+	public void clearWaypoints() {
+		int count = list.size();
+		Log.d("SIZE", "Size is " + adapter.getCount());
+		
+		for (int i = 0; i < count; i++) {
+			Log.d("SIZE", "Remove item " + i);
+		    removeItem(0);
+		}
+		
+		Log.d("SIZE", "Finished clearing Waypoints");
+	}
 	
 	public void addItem(String str) {
 		list.add(str);
@@ -137,8 +151,13 @@ public class WaypointListFragment extends ListFragment {
 	}
 
 	public void removeItem(int index) {
+		Log.d("SIZE", "Removing item " + index);
+		
 		list.remove(index);
 
+		Log.d("SIZE", "New size is " + list.size());
+		Log.d("SIZE", "Finished removing item " + index);
+		
 		adapter.notifyDataSetChanged();
 	}
 

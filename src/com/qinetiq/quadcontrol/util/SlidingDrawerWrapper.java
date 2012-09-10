@@ -8,7 +8,7 @@
  * Dependencies : 
  ****************************************************************************/
 
-package com.qinetiq.quadcontrol;
+package com.qinetiq.quadcontrol.util;
 
 import android.content.Context;
 import android.util.AttributeSet;
