@@ -40,8 +40,8 @@ public class CommandClient implements NodeMain {
 	public void onError(Node node, Throwable throwable) {
 		Log.d("CommandClient", "onError");
 		
-		Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
-				.show();
+//		Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
+//				.show();
 	}
 
 	@Override
@@ -90,17 +90,17 @@ public class CommandClient implements NodeMain {
 								@Override
 								public void onFailure(
 										org.ros.exception.RemoteException e) {
-									Toast.makeText(context,
-											"Failed to send Command",
-											Toast.LENGTH_LONG).show();
+//									Toast.makeText(context,
+//											"Failed to send Command",
+//											Toast.LENGTH_LONG).show();
 									// throw new RosRuntimeException(e);
 								}
 							});
 
 		} catch (ServiceNotFoundException e) {
-			Looper.prepare();
-			Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
-					.show();
+			//Looper.prepare();
+//			Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
+//					.show();
 			// throw new RosRuntimeException(e);
 		}
 

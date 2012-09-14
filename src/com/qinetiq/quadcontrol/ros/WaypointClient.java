@@ -47,8 +47,8 @@ public class WaypointClient implements NodeMain {
 	@Override
 	public void onError(Node node, Throwable throwable) {
 		Log.d("WaypointClient", "onError");
-		Toast.makeText(context, "Failed to send Waypoints", Toast.LENGTH_LONG)
-				.show();
+//		Toast.makeText(context, "Failed to send Waypoints", Toast.LENGTH_LONG)
+//				.show();
 	}
 
 	@Override
@@ -124,9 +124,9 @@ public class WaypointClient implements NodeMain {
 											"Returned number of waypoints "
 													+ response.getNumWaypts());
 
-									Toast.makeText(context,
-											"Waypoints have been sent",
-											Toast.LENGTH_LONG).show();
+//									Toast.makeText(context,
+//											"Waypoints have been sent",
+//											Toast.LENGTH_LONG).show();
 								}
 
 								@Override
@@ -135,9 +135,9 @@ public class WaypointClient implements NodeMain {
 									Log.d("Error",
 											"WaypointClient - Running onFailure return Error");
 
-									Toast.makeText(context,
-											"Failed to send Waypoints",
-											Toast.LENGTH_LONG).show();
+//									Toast.makeText(context,
+//											"Failed to send Waypoints",
+//											Toast.LENGTH_LONG).show();
 
 									connectedNode.shutdown();
 									// throw new RosRuntimeException(e);
@@ -146,8 +146,8 @@ public class WaypointClient implements NodeMain {
 		} catch (ServiceNotFoundException e) {
 			Log.d("Error", "WaypointClient - Send_Waypoints Error");
 
-			Toast.makeText(context, "Failed to send Waypoints",
-					Toast.LENGTH_LONG).show();
+//			Toast.makeText(context, "Failed to send Waypoints",
+//					Toast.LENGTH_LONG).show();
 
 			throw new RosRuntimeException(e);
 		}
