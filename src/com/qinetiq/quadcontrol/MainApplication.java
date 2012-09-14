@@ -3,6 +3,8 @@ package com.qinetiq.quadcontrol;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
+import com.qinetiq.quadcontrol.fragments.StatusFragment;
+
 import android.app.Application;
 
 public class MainApplication extends Application {
@@ -12,6 +14,8 @@ public class MainApplication extends Application {
 
 	private VehicleStatus vehicleStatus;
 	private WaypointList wayptList;
+	
+	private StatusFragment statusFrag = null;
 
 	private boolean ConnectedToVehicle = false;
 
@@ -59,5 +63,13 @@ public class MainApplication extends Application {
 
 	public void setConnectedToVehicle(boolean connectedToVehicle) {
 		ConnectedToVehicle = connectedToVehicle;
+	}
+
+	public StatusFragment getStatusFrag() {
+		return statusFrag;
+	}
+
+	public void setStatusFrag(StatusFragment statusFrag) {
+		this.statusFrag = statusFrag;
 	}
 }

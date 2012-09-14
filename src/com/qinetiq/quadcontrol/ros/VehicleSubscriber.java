@@ -18,46 +18,106 @@ import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Subscriber;
 
+import com.qinetiq.quadcontrol.MainActivity;
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
 import com.qinetiq.quadcontrol.StatusInfo;
 import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.fragments.CommandFragment;
 import com.qinetiq.quadcontrol.fragments.StatusFragment;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class VehicleSubscriber implements NodeMain {
 	public VehicleStatus vehicleStatusObject;
 	StatusFragment statusFragment = null;
+	CommandFragment commandFragment = null;
+	Context context;
+	MainApplication mainApp;
+	MainActivity mainActivity;
 
 	public VehicleSubscriber(VehicleStatus vehicleStatusObject,
-			StatusFragment statusFragment) {
+			StatusFragment statusFragment, CommandFragment commandFragment,
+			Context context) {
+		Log.d("VehicleSubscriber", "onCreate");
+		this.context = context;
+		this.commandFragment = commandFragment;
 		this.vehicleStatusObject = vehicleStatusObject;
 		this.statusFragment = statusFragment;
+
+		mainApp = (MainApplication) context.getApplicationContext();
 	}
 
 	@Override
 	public void onError(Node node, Throwable throwable) {
+		Log.d("VehicleSubscriber", "onError");
 
-	}
-
-	@Override
-	public void onShutdown(Node node) {
 		node.shutdown();
 	}
 
 	@Override
-	public void onShutdownComplete(Node node) {
+	public void onShutdown(Node node) {
+		Log.d("VehicleSubscriber", "onShutdown");
 
+		if (commandFragment != null) {
+			Handler uiHandler = commandFragment.UIHandler;
+
+			Bundle b = new Bundle();
+			b.putInt("VEHICLE_CONNECT", 0);
+			Message msg = Message.obtain(uiHandler);
+			msg.setData(b);
+			msg.sendToTarget();
+		}
+
+		// mainActivity = mainApp.getMainActivity();
+		//
+		// Log.d("VehicleSubscriber", "Getting MainActivity");
+		// if (mainActivity != null) {
+		// Log.d("VehicleSubscriber", "Have MainActivity");
+		//
+		// Handler uiHandler2 = mainActivity.UIHandler;
+		//
+		// Bundle b = new Bundle();
+		// b.putInt("VEHICLE_CONNECT", 0);
+		// Message msg = Message.obtain(uiHandler2);
+		// msg.setData(b);
+		// msg.sendToTarget();
+		// }
+
+		mainApp.setConnectedToVehicle(false);
+	}
+
+	@Override
+	public void onShutdownComplete(Node node) {
+		Log.d("VehicleSubscriber", "onShutdownComplete");
 	}
 
 	@Override
 	public void onStart(ConnectedNode connectedNode) {
 		Log.d("Start", "VehicleSubscriber Node Started");
 
+		mainApp.setConnectedToVehicle(true);
+
+		if (commandFragment != null) {
+			Handler uiHandler = commandFragment.UIHandler;
+
+			Bundle b = new Bundle();
+			b.putInt("VEHICLE_CONNECT", 1);
+			Message msg = Message.obtain(uiHandler);
+			msg.setData(b);
+			msg.sendToTarget();
+		}
+
 		Subscriber<vehicle_control.StatusInfo> subscriber = connectedNode
-				.newSubscriber("VehicleStatus", vehicle_control.StatusInfo._TYPE);
+				.newSubscriber("VehicleStatus",
+						vehicle_control.StatusInfo._TYPE);
 		subscriber
 				.addMessageListener(new MessageListener<vehicle_control.StatusInfo>() {
 					@Override

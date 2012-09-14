@@ -30,6 +30,7 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 	public static final String KEY_DEFAULT_YAW_FROM = "default_yaw_from";
 	public static final String KEY_DEFAULT_PAN_POSITION = "default_pan_position";
 	public static final String KEY_DEFAULT_TILT_POSITION = "default_tilt_position";
+	public static final String KEY_DEFAULT_POSITION_ACCURACY = "default_position_accuracy";
 	
 	private EditTextPreference mDefaultSpeed;
 	private EditTextPreference mDefaultAltitude;
@@ -37,6 +38,7 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 	private EditTextPreference mDefaultYawFrom;
 	private EditTextPreference mDefaultPanPosition;
 	private EditTextPreference mDefaultTiltPosition;
+	private EditTextPreference mDefaultPositionAccuracy;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,8 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 				.findPreference(KEY_DEFAULT_PAN_POSITION);
 		mDefaultTiltPosition = (EditTextPreference) getPreferenceScreen()
 				.findPreference(KEY_DEFAULT_TILT_POSITION);
+		mDefaultPositionAccuracy = (EditTextPreference) getPreferenceScreen()
+				.findPreference(KEY_DEFAULT_POSITION_ACCURACY);
 	}
 
 	@Override
@@ -81,6 +85,8 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 				+ prefs.getString(KEY_DEFAULT_PAN_POSITION, ""));
 		mDefaultTiltPosition.setSummary("Current default tilt position is "
 				+ prefs.getString(KEY_DEFAULT_TILT_POSITION, ""));
+		mDefaultPositionAccuracy.setSummary("Current default accuracy position is "
+				+ prefs.getString(KEY_DEFAULT_POSITION_ACCURACY, ""));
 
 		// Set up a listener whenever a key changes
 		PreferenceManager.getDefaultSharedPreferences(this.getActivity())
@@ -117,6 +123,9 @@ public class VehiclePreferenceFragment extends PreferenceFragment implements
 					+ sharedPreferences.getString(key, ""));
 		} else if (key.equals(KEY_DEFAULT_TILT_POSITION)) {
 			mDefaultTiltPosition.setSummary("Current default tilt position is "
+					+ sharedPreferences.getString(key, ""));
+		} else if (key.equals(KEY_DEFAULT_POSITION_ACCURACY)) {
+			mDefaultPositionAccuracy.setSummary("Current default position accuracy is "
 					+ sharedPreferences.getString(key, ""));
 		}
 		

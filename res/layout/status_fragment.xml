@@ -18,26 +18,32 @@
 
         <TextView
             android:id="@+id/lblLatitudeStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Latitude: " />
+            android:text="Latitude: "
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblLatitudeStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
 
         <TextView
             android:id="@+id/lblLongitudeStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Longitude: " />
+            android:text="Longitude: "
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblLongitudeStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 
@@ -48,26 +54,32 @@
 
         <TextView
             android:id="@+id/lblAltitudeStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Altitude: " />
+            android:text="Altitude: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblAltitudeStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
 
         <TextView
             android:id="@+id/lblHeadingStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Heading: " />
+            android:text="Heading: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblHeadingStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 
@@ -78,14 +90,17 @@
 
         <TextView
             android:id="@+id/lblSpeedStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Speed: " />
+            android:text="Speed: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblSpeedStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 
@@ -96,26 +111,32 @@
 
         <TextView
             android:id="@+id/lblPanAngleStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Pan Angle: " />
+            android:text="Pan Angle: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblPanAngleStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
 
         <TextView
             android:id="@+id/lblTiltAngleStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Tilt Angle: " />
+            android:text="Tilt Angle: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblTiltAngleStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 
@@ -126,14 +147,17 @@
 
         <TextView
             android:id="@+id/lblBatteryStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="Battery: " />
+            android:text="Battery: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblBatteryStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 
@@ -144,26 +168,32 @@
 
         <TextView
             android:id="@+id/lblGPSStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="GPS Stat: " />
+            android:text="GPS Stat: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblGPStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
 
         <TextView
             android:id="@+id/lblCurrWaypointStatus"
-            android:layout_width="75dp"
+            android:layout_width="95dp"
             android:layout_height="wrap_content"
-            android:text="CurrWaypt: " />
+            android:text="CurrWaypt: " 
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/lblCurrWaypointStatusValue"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:textSize="16dp"
             android:text="" />
     </LinearLayout>
 

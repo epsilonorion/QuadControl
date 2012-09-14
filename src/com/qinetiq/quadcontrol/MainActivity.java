@@ -26,7 +26,6 @@ import com.qinetiq.quadcontrol.fragments.MapFragment;
 import com.qinetiq.quadcontrol.fragments.MediaFragment;
 import com.qinetiq.quadcontrol.fragments.StatusFragment;
 import com.qinetiq.quadcontrol.fragments.ViewFragmentAdapter;
-import com.qinetiq.quadcontrol.fragments.WaypointEntryFragment;
 import com.qinetiq.quadcontrol.fragments.WaypointListFragment;
 import com.qinetiq.quadcontrol.preferences.PreferencesMenu;
 import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
@@ -51,6 +50,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -73,11 +73,15 @@ public class MainActivity extends MapActivity {
 	ViewFragmentAdapter mAdapter;
 	ViewPager mPager;
 	PageIndicator mIndicator;
+	
+	MainApplication mainApp;
+	
+	Menu menu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		// Set screen to always stay on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -108,7 +112,7 @@ public class MainActivity extends MapActivity {
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-		MainApplication mainApp = (MainApplication)getApplicationContext();
+		mainApp = (MainApplication)getApplicationContext();
         mainApp.setWayptList(wayptList);
         mainApp.setVehicleStatus(vehicleStatus);
 
@@ -121,7 +125,6 @@ public class MainActivity extends MapActivity {
 		transaction.commit();
 
 		// Add ViewPager and Related Fragments
-		WaypointEntryFragment wayptEntryFrag = new WaypointEntryFragment();
 		WaypointListFragment wayptListFrag = new WaypointListFragment();
 		StatusFragment statusFrag = new StatusFragment();
 		CommandFragment commandFrag = new CommandFragment();
@@ -129,12 +132,14 @@ public class MainActivity extends MapActivity {
 		List<Fragment> fragments = new Vector<Fragment>();
 		fragments.add(commandFrag);
 		fragments.add(wayptListFrag);
-		fragments.add(wayptEntryFrag);
 		fragments.add(statusFrag);
+		
+		mainApp.setStatusFrag(statusFrag);
 		
 		mAdapter = new ViewFragmentAdapter(getFragmentManager(), fragments);
 
 		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager.setOffscreenPageLimit(4);
 		mPager.setAdapter(mAdapter);
 
 		mIndicator = (TitlePageIndicator) findViewById(R.id.indicator);
@@ -169,6 +174,8 @@ public class MainActivity extends MapActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
+		
+		this.menu = menu;
 		return true;
 	}
 
@@ -180,7 +187,11 @@ public class MainActivity extends MapActivity {
 			startActivity(new Intent(this, PreferencesMenu.class));
 
 			return (true);
+		case R.id.vehicle_connect:
+			
+			return (true);
 		}
+		
 
 		return (super.onOptionsItemSelected(item));
 	}
@@ -304,4 +315,34 @@ public class MainActivity extends MapActivity {
 			}
 		});
 	}
+	
+	public void updateVehicleConnect() {
+//		MenuItem vehicleConnect = menu.getItem(R.id.vehicle_connect);
+//		if (mainApp.isConnectedToVehicle()) {
+//			
+//			vehicleConnect.setTitle("AYYIYI");
+//			vehicleConnect.setIcon(R.drawable.icon_connection_on);
+//		} else {
+//			vehicleConnect.setTitle("AYYIYI");
+//			vehicleConnect.setIcon(R.drawable.icon_connection_on);
+////			MenuItem vehicleConnectItem = (MenuItem) this.findViewById(R.id.vehicle_connect);
+////			vehicleConnectItem.setTitle("AYIYIYI");
+////			vehicleConnectItem.setIcon(R.drawable.icon_connection_off);
+//		}
+	}
+	
+	public Handler UIHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.getData().getInt("VEHICLE_CONNECT")) {
+			case 0: {
+				updateVehicleConnect();
+			}
+				break;
+			case 1: {
+				updateVehicleConnect();
+			}
+				break;
+			}
+		};
+	};
 }

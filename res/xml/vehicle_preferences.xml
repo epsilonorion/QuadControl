@@ -18,14 +18,14 @@
             android:title="Default Speed (%)" >
         </EditTextPreference>
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="10000"
             android:dialogTitle="Enter default altitude"
             android:key="default_altitude"
             android:summary="Click to enter default altitude"
             android:title="Default Altitude (mm)" >
         </EditTextPreference>
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="500"
             android:dialogTitle="Enter default Hold Position time"
             android:key="default_hold_time"
             android:summary="Click to enter default hold position time"
@@ -37,6 +37,13 @@
             android:key="default_yaw_from"
             android:summary="Click to enter default yaw from heading"
             android:title="Default Yaw From heading (degrees)" >
+        </EditTextPreference>
+        <EditTextPreference
+            android:defaultValue="3000"
+            android:dialogTitle="Enter default Position Accuracy"
+            android:key="default_position_accuracy"
+            android:summary="Click to enter default position accuracy"
+            android:title="Default Position Accuracy (mm)" >
         </EditTextPreference>
     </PreferenceCategory>
     <PreferenceCategory android:title="Camera Parameters" >

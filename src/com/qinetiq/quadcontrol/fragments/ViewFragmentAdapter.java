@@ -19,8 +19,8 @@ import android.app.FragmentManager;
 import android.support.v13.app.FragmentPagerAdapter;
 
 public class ViewFragmentAdapter extends FragmentPagerAdapter {
-	protected static final String[] CONTENT = new String[] { "Waypt Setup",
-			"Waypt List", "Vehicle Commands", "Status", };
+	protected static final String[] CONTENT = new String[] { "Waypt Commands",
+			"Waypt List", "Status", };
 	
 	private final List<Fragment> fragments;
 

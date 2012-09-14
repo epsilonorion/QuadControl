@@ -12,14 +12,19 @@ package com.qinetiq.quadcontrol;
 
 import java.util.ArrayList;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -103,7 +108,7 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 					Double.parseDouble(prefs.getString("default_pan_position",
 							"100")), Double.parseDouble(prefs.getString(
 							"default_tilt_position", "100")), 
-							Double.parseDouble(prefs.getString("default_yaw_from", "0")));
+							Double.parseDouble(prefs.getString("default_yaw_from", "0")), 0);
 
 			// Add waypoint to waypoint list object
 			wayptList.add(waypt);
@@ -153,7 +158,7 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 						result = true;
 						inDrag = item;
 						indexDrag = overlayItemList.indexOf(inDrag);
-						overlayItemList.remove(inDrag);
+						overlayItemList.remove(indexDrag);
 						populate();
 
 						xDragTouchOffset = 0;
@@ -210,7 +215,9 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 						if (deleteWayptFlag) {
 							result = true;
 							wayptList.remove(count);
-						}
+						} else if (modifyWayptFlag) {
+							OpenDialog(count);
+						} 
 						break;
 					}
 					count++;
@@ -265,13 +272,15 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 		OverlayItem modifiedItem = new OverlayItem(p, title, snippet);
 		
+		Log.d("Test", "Modify size is " + overlayItemList.size());
+		Log.d("Test", "Modify Index is " + index);
 		overlayItemList.add(index, modifiedItem);
 		populate();
 	}
 
 	@Override
 	protected OverlayItem createItem(int i) {
-		// TODO Auto-generated method stub
+
 		return overlayItemList.get(i);
 	}
 
@@ -317,5 +326,160 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 	
 	public void setModifyWayptFlag(Boolean modifyWayptFlag) {
 		this.modifyWayptFlag = modifyWayptFlag;
+	}
+	
+	private void OpenDialog(final int index) {
+		AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+		alert.setTitle("Modify Waypoint Info");
+
+		// Set an EditText view to get user input
+		LayoutInflater layoutInflater = (LayoutInflater) context
+				.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+		View view = layoutInflater
+				.inflate(R.layout.waypoint_entry_dialog, null);
+
+		alert.setView(view);
+
+		Log.d("Test", "Size of wayptList " + wayptList.size());
+		Log.d("Test", "Size of overlayList " + overlayItemList.size());
+		
+		Log.d("Test", "Index being used " + index);
+		// Use tapped waypoint as default values
+		WaypointInfo modifiedMarker = wayptList.get(index);
+		
+		final String defaultName = modifiedMarker.getName();
+		final double defaultLatitude = modifiedMarker.getLatitude();
+		final double defaultLongitude = modifiedMarker.getLongitude();
+		final double defaultSpeed = modifiedMarker.getSpeedTo();
+		final double defaultAltitude = modifiedMarker.getAltitude();
+		final double defaultHoldTime = modifiedMarker.getHoldTime();
+		final double defaultPanAngle = modifiedMarker.getPanAngle();
+		final double defaultTiltAngle = modifiedMarker.getTiltAngle();
+		final double defaultHeading = modifiedMarker.getYawFrom();
+		final double defaultPosAcc = modifiedMarker.getPosAcc();
+
+		final EditText wayptNameTxt = (EditText) view
+				.findViewById(R.id.txtWaypointName);
+		final EditText latitudeTxt = (EditText) view
+				.findViewById(R.id.txtLatitude);
+		final EditText longitudeTxt = (EditText) view
+				.findViewById(R.id.txtLongitude);
+		final EditText speedToTxt = (EditText) view
+				.findViewById(R.id.txtSpeedTo);
+		final EditText holdTimeTxt = (EditText) view
+				.findViewById(R.id.txtHoldTime);
+		final EditText altitudeTxt = (EditText) view
+				.findViewById(R.id.txtAltitude);
+		final EditText headingTxt = (EditText) view
+				.findViewById(R.id.txtDesiredHeading);
+		final EditText panAngleTxt = (EditText) view
+				.findViewById(R.id.txtPanAngle);
+		final EditText tiltAngleTxt = (EditText) view
+				.findViewById(R.id.txtTiltAngle);
+		final EditText posAccTxt = (EditText) view
+				.findViewById(R.id.txtPosAccuracy);
+
+		wayptNameTxt.setText(defaultName);
+		latitudeTxt.setText("" + defaultLatitude);
+		longitudeTxt.setText("" + defaultLongitude);
+		speedToTxt.setText("" + defaultSpeed);
+		holdTimeTxt.setText("" + defaultHoldTime);
+		altitudeTxt.setText("" + defaultAltitude);
+		headingTxt.setText("" + defaultHeading);
+		panAngleTxt.setText("" + defaultPanAngle);
+		tiltAngleTxt.setText("" + defaultTiltAngle);
+		posAccTxt.setText("" + defaultPosAcc);
+
+		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				String wayptNameStr = wayptNameTxt.getText().toString();
+				String latitudeStr = latitudeTxt.getText().toString();
+				String longitudeStr = longitudeTxt.getText().toString();
+				String speedToStr = speedToTxt.getText().toString();
+				String holdTimeStr = holdTimeTxt.getText().toString();
+				String altitudeStr = altitudeTxt.getText().toString();
+				String headingStr = headingTxt.getText().toString();
+				String panAngleStr = panAngleTxt.getText().toString();
+				String tiltAngleStr = tiltAngleTxt.getText().toString();
+				String posAccStr = posAccTxt.getText().toString();
+
+				double latitude, longitude, speedTo, holdTime, altitude, heading;
+				double panAngle, tiltAngle, posAcc;
+
+				try {
+					latitude = Double.parseDouble(latitudeStr);
+				} catch (final NumberFormatException e) {
+					latitude = defaultLatitude;
+				}
+
+				try {
+					longitude = Double.parseDouble(longitudeStr);
+				} catch (final NumberFormatException e) {
+					longitude = defaultLongitude;
+				}
+
+				try {
+					speedTo = Double.parseDouble(speedToStr);
+				} catch (final NumberFormatException e) {
+					speedTo = defaultSpeed;
+				}
+
+				try {
+					holdTime = Double.parseDouble(holdTimeStr);
+				} catch (final NumberFormatException e) {
+					holdTime = defaultHoldTime;
+				}
+
+				try {
+					altitude = Double.parseDouble(altitudeStr);
+				} catch (final NumberFormatException e) {
+					altitude = defaultAltitude;
+				}
+
+				try {
+					heading = Double.parseDouble(headingStr);
+				} catch (final NumberFormatException e) {
+					heading = defaultHeading;
+				}
+
+				try {
+					panAngle = Double.parseDouble(panAngleStr);
+				} catch (final NumberFormatException e) {
+					panAngle = defaultPanAngle;
+				}
+
+				try {
+					tiltAngle = Double.parseDouble(tiltAngleStr);
+				} catch (final NumberFormatException e) {
+					tiltAngle = defaultTiltAngle;
+				}
+
+				try {
+					posAcc = Double.parseDouble(posAccStr);
+				} catch (final NumberFormatException e) {
+					posAcc = defaultPosAcc;
+				}
+
+				WaypointInfo waypt = new WaypointInfo(wayptNameStr, latitude,
+						longitude, speedTo, altitude, holdTime, panAngle,
+						tiltAngle, heading, posAcc);
+
+				Log.d("TEST", "Index value is " + index);
+				// Add waypoint to waypoint list object
+				overlayItemList.remove(index);
+				wayptList.modify(index,  waypt);
+				populate();
+			}
+		});
+
+		alert.setNegativeButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// Canceled.
+					}
+				});
+
+		alert.show();
 	}
 }

@@ -25,7 +25,7 @@ public class StatusInfo {
 	private int currWaypoint;
 
 	public StatusInfo() {
-		this.vehicleName = "NamePlaceholder";
+		this.vehicleName = "";
 		this.latitude = 0;
 		this.longitude = 0;
 		this.heading = 0;

@@ -26,41 +26,48 @@ import android.widget.Toast;
 
 public class CommandClient implements NodeMain {
 	int Command = -1;
-	
+
 	Context context;
-	
+
 	public CommandClient(int Command, Context context) {
+		Log.d("CommandClient", "onCreate");
+		
 		this.Command = Command;
 		this.context = context;
 	}
-	
+
 	@Override
 	public void onError(Node node, Throwable throwable) {
-		// TODO Auto-generated method stub
-
+		Log.d("CommandClient", "onError");
+		
+		Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
+				.show();
 	}
 
 	@Override
 	public void onShutdown(Node node) {
-		// TODO Auto-generated method stub
-
+		Log.d("CommandClient", "onShutdown");
+		
 	}
 
 	@Override
 	public void onShutdownComplete(Node node) {
-		// TODO Auto-generated method stub
-
+		Log.d("CommandClient", "onShutdownComplete");
+		
 	}
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
-		ServiceClient<vehicle_control.VehicleCommandRequest, vehicle_control.VehicleCommandResponse> serviceClient;
+		Log.d("CommandClient", "onStart");
 		
+		ServiceClient<vehicle_control.VehicleCommandRequest, vehicle_control.VehicleCommandResponse> serviceClient;
+
 		try {
 			serviceClient = connectedNode.newServiceClient("vehicle_command",
 					vehicle_control.VehicleCommand._TYPE);
-			
-			final vehicle_control.VehicleCommandRequest request = serviceClient.newMessage();
+
+			final vehicle_control.VehicleCommandRequest request = serviceClient
+					.newMessage();
 
 			request.setCommand(Command);
 
@@ -83,19 +90,19 @@ public class CommandClient implements NodeMain {
 								@Override
 								public void onFailure(
 										org.ros.exception.RemoteException e) {
-									throw new RosRuntimeException(e);
+									Toast.makeText(context,
+											"Failed to send Command",
+											Toast.LENGTH_LONG).show();
+									// throw new RosRuntimeException(e);
 								}
 							});
 
 		} catch (ServiceNotFoundException e) {
-			Log.d("TEST", "Send Command Failed");
 			Looper.prepare();
-			Toast.makeText(context, "Send Command failed!",
-					Toast.LENGTH_SHORT).show();
-			Log.d("TEST", "Sent Toast");
-//			throw new RosRuntimeException(e);
+			Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
+					.show();
+			// throw new RosRuntimeException(e);
 		}
-		
 
 	}
 

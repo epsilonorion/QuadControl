@@ -108,6 +108,15 @@
                     android:textOn="Modify" 
                     android:textOff="Modify">
                 </ToggleButton>
+                
+                <Button
+                    android:id="@+id/btnNew"
+                    style="@style/ButtonNormalText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableTop="@drawable/icon_add"
+                    android:text="New" >
+                </Button>
 
                 <Button
                     android:id="@+id/btnClear"

@@ -20,6 +20,7 @@ import org.ros.node.NodeMainExecutor;
 
 import com.qinetiq.quadcontrol.MainApplication;
 import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.StatusInfo;
 import com.qinetiq.quadcontrol.VehicleStatus;
 import com.qinetiq.quadcontrol.WaypointList;
 import com.qinetiq.quadcontrol.ros.CommandClient;
@@ -30,8 +31,12 @@ import com.qinetiq.quadcontrol.util.Utils;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -53,6 +58,8 @@ public class CommandFragment extends Fragment {
 
 	private MainApplication mainApp;
 
+	private CommandFragment commandFragInstance;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -67,6 +74,8 @@ public class CommandFragment extends Fragment {
 		wayptListObject = mainApp.getWayptList();
 		vehicleStatusObject = mainApp.getVehicleStatus();
         
+		commandFragInstance = this;
+		
 		// Capture our button from layout
 		Button btnConnecToVehicle = (Button) getActivity().findViewById(
 				R.id.btnConnectVehicle);
@@ -121,22 +130,26 @@ public class CommandFragment extends Fragment {
 					URI uri = URI.create("http://" + hostMaster + ":" + port);
 					nodeConfiguration.setMasterUri(uri);
 
+					Log.d("Test", "hostMaster is " + hostMaster);
+					Log.d("Test", "uri is " + uri);
 					nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
 					// Set global variables to be used elsewhere.
 					mainApp.setNodeMainExecutor(nodeMainExecutor);
 					mainApp.setNodeConfiguration(nodeConfiguration);
 
-					StatusFragment statusFragment = (StatusFragment) getFragmentManager()
-							.findFragmentByTag(
-									"android:switcher:" + R.id.pager + ":3");
+//					StatusFragment statusFragment = (StatusFragment) getFragmentManager()
+//							.findFragmentByTag(
+//									"android:switcher:" + R.id.pager + ":2");
 
+					StatusFragment statusFragment = mainApp.getStatusFrag();
+					
 					// Create nodes
 					vehSub = new VehicleSubscriber(vehicleStatusObject,
-							statusFragment);
+							statusFragment, commandFragInstance, getActivity().getApplicationContext());
 					// wayptPub = new WaypointPublisher();
 					// testService = new ROSService();
-					wayptClient = new WaypointClient(wayptListObject);
+					wayptClient = new WaypointClient(wayptListObject, getActivity().getApplicationContext());
 
 					// Execute Nodes
 					nodeMainExecutor.execute(vehSub, nodeConfiguration);
@@ -147,9 +160,7 @@ public class CommandFragment extends Fragment {
 
 					Button btnConnectToVehicle = (Button) getActivity()
 							.findViewById(R.id.btnConnectVehicle);
-					btnConnectToVehicle.setText("Disconnect From Vehicle");
-
-					mainApp.setConnectedToVehicle(true);
+					btnConnectToVehicle.setText("Connecting...");
 				} else {
 					// Shutdown Nodes
 					nodeMainExecutor.shutdown();
@@ -157,12 +168,6 @@ public class CommandFragment extends Fragment {
 					// Give message and change button context
 					Toast.makeText(getActivity(), "Disconnected from  Vehicle",
 							Toast.LENGTH_SHORT).show();
-
-					Button btnConnectToVehicle = (Button) getActivity()
-							.findViewById(R.id.btnConnectVehicle);
-					btnConnectToVehicle.setText("Connect To Vehicle");
-
-					mainApp.setConnectedToVehicle(false);
 				}
 
 				break;
@@ -170,7 +175,6 @@ public class CommandFragment extends Fragment {
 			case R.id.btnSendWaypoints:
 				if (mainApp.isConnectedToVehicle()) {
 					nodeMainExecutor.execute(wayptClient, nodeConfiguration);
-//					nodeMainExecutor.shutdownNodeMain(wayptClient);
 
 					Toast.makeText(getActivity(), "Sending Waypoints",
 							Toast.LENGTH_SHORT).show();
@@ -246,5 +250,24 @@ public class CommandFragment extends Fragment {
 			}
 
 		}
+	};
+	
+	public Handler UIHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.getData().getInt("VEHICLE_CONNECT")) {
+			case 0: {
+				Button btnConnectToVehicle = (Button) getActivity()
+						.findViewById(R.id.btnConnectVehicle);
+				btnConnectToVehicle.setText("Connect To Vehicle");
+			}
+				break;
+			case 1: {
+				Button btnConnectToVehicle = (Button) getActivity()
+						.findViewById(R.id.btnConnectVehicle);
+				btnConnectToVehicle.setText("Disconnect From Vehicle");
+			}
+				break;
+			}
+		};
 	};
 }

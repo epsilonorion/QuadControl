@@ -11,13 +11,6 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/lblWaypointInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Waypoint Info"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -27,14 +20,17 @@
                 android:id="@+id/lblWaypointName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Waypoint Name: " />
+                android:text="Waypoint Name: " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtWaypointName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6" >
+                android:inputType="text"
+                android:ems="8" >
             </EditText>
         </LinearLayout>
 
@@ -45,32 +41,38 @@
 
             <TextView
                 android:id="@+id/lblLatitude"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Latitude: " />
+                android:text="Latitude (decimal degrees): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtLatitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" >
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" >
             </EditText>
 
             <TextView
                 android:id="@+id/lblLongitude"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Longitude: " />
+                android:text="Longitude (decimal degrees): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtLongitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" />
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -80,32 +82,38 @@
 
             <TextView
                 android:id="@+id/lblSpeedTo"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="SpeedTo: " />
+                android:text="SpeedTo (% of 100): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtSpeedTo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" >
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" >
             </EditText>
 
             <TextView
                 android:id="@+id/lblHoldTime"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Hold Time: " />
+                android:text="Hold Time (1/100th sec): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtHoldTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" />
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -115,32 +123,38 @@
 
             <TextView
                 android:id="@+id/lblAltitude"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Altitude: " />
+                android:text="Altitude (mm): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtAltitude"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" >
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" >
             </EditText>
 
             <TextView
                 android:id="@+id/lblHeadingFrom"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Yaw From: " />
+                android:text="Yaw From (degrees): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtDesiredHeading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" />
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -150,67 +164,62 @@
 
             <TextView
                 android:id="@+id/lblPanAngle"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Pan Angle: " />
+                android:text="Pan Angle (degrees): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtPanAngle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" >
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" >
             </EditText>
 
             <TextView
                 android:id="@+id/lblTiltAngle"
-                android:layout_width="70dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:text="Tilt Angle: " />
+                android:text="Tilt Angle (degrees): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
             <EditText
                 android:id="@+id/txtTiltAngle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="6"
-                android:textSize="12dp" />
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" />
         </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/SubmitContainer"
+        
+        <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:gravity="center_horizontal" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
 
-            <LinearLayout
-                android:layout_width="fill_parent"
+            <TextView
+                android:id="@+id/lblPosAccuracy"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:orientation="horizontal" >
+                android:text="Position Accuracy (mm): " 
+                android:textStyle="bold"
+                android:textSize="16dp" />
 
-                <Button
-                    android:id="@+id/btnSubmitNewWaypt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_weight="1"
-                    android:text="New" />
-
-                <Button
-                    android:id="@+id/btnModifyCurrentWaypt"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_weight="1"
-                    android:text="Modify" />
-            </LinearLayout>
-        </RelativeLayout>
+            <EditText
+                android:id="@+id/txtPosAccuracy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:ems="8"
+                android:textSize="16dp" >
+            </EditText>
+        </LinearLayout>
     </LinearLayout>
-
 </ScrollView>

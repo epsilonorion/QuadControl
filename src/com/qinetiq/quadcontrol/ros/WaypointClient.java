@@ -27,36 +27,46 @@ import com.google.common.collect.Lists;
 import com.qinetiq.quadcontrol.WaypointInfo;
 import com.qinetiq.quadcontrol.WaypointList;
 
+import android.content.Context;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 public class WaypointClient implements NodeMain {
 	private WaypointList wayptObject;
+	private Context context;
 
-	public WaypointClient(WaypointList wayptObject) {
+	public WaypointClient(WaypointList wayptObject, Context context) {
+		Log.d("WaypointClient", "onCreate");
+
 		this.wayptObject = wayptObject;
+		this.context = context;
 	}
 
 	@Override
 	public void onError(Node node, Throwable throwable) {
-		// TODO Auto-generated method stub
-
+		Log.d("WaypointClient", "onError");
+		Toast.makeText(context, "Failed to send Waypoints", Toast.LENGTH_LONG)
+				.show();
 	}
 
 	@Override
 	public void onShutdown(Node node) {
-		// TODO Auto-generated method stub
+		Log.d("WaypointClient", "onShutdown");
 
 	}
 
 	@Override
 	public void onShutdownComplete(Node node) {
-		// TODO Auto-generated method stub
+		Log.d("WaypointClient", "onShutdownComplete");
 
 	}
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
+		Log.d("Start", "WaypointClient Started");
+
 		final Publisher<vehicle_control.WaypointTrajectory> publisher = connectedNode
 				.newPublisher("WaypointTrajectory",
 						vehicle_control.WaypointTrajectory._TYPE);
@@ -75,12 +85,12 @@ public class WaypointClient implements NodeMain {
 			point = wayptObject.get(i);
 
 			waypt = wayptPublisher.newMessage();
-			waypt.setLatitude((int)(point.getLatitude() * 1e7));
-			waypt.setLongitude((int)(point.getLongitude() * 1e7));
+			waypt.setLatitude((int) (point.getLatitude() * 1e7));
+			waypt.setLongitude((int) (point.getLongitude() * 1e7));
 			waypt.setSpeed((int) point.getSpeedTo());
 			waypt.setHoldTime((short) point.getHoldTime());
-			waypt.setHeight((int)point.getAltitude());
-			waypt.setYawFrom((int)(point.getYawFrom() * 100));
+			waypt.setHeight((int) point.getAltitude());
+			waypt.setYawFrom((int) (point.getYawFrom() * 100));
 
 			waypoints.add(waypt);
 		}
@@ -92,76 +102,55 @@ public class WaypointClient implements NodeMain {
 		try {
 			serviceClient = connectedNode.newServiceClient("send_waypoints",
 					"vehicle_control/SendWaypoints");
+
+			final vehicle_control.SendWaypointsRequest request = serviceClient
+					.newMessage();
+
+			request.setList(waypointList);
+
+			serviceClient
+					.call(request,
+							new ServiceResponseListener<vehicle_control.SendWaypointsResponse>() {
+								@Override
+								public void onSuccess(
+										vehicle_control.SendWaypointsResponse response) {
+									connectedNode
+											.getLog()
+											.info(String
+													.format("Returned number of waypoints %d",
+															response.getNumWaypts()));
+
+									Log.d("TEST",
+											"Returned number of waypoints "
+													+ response.getNumWaypts());
+
+									Toast.makeText(context,
+											"Waypoints have been sent",
+											Toast.LENGTH_LONG).show();
+								}
+
+								@Override
+								public void onFailure(
+										org.ros.exception.RemoteException e) {
+									Log.d("Error",
+											"WaypointClient - Running onFailure return Error");
+
+									Toast.makeText(context,
+											"Failed to send Waypoints",
+											Toast.LENGTH_LONG).show();
+
+									connectedNode.shutdown();
+									// throw new RosRuntimeException(e);
+								}
+							});
 		} catch (ServiceNotFoundException e) {
 			Log.d("Error", "WaypointClient - Send_Waypoints Error");
-			
+
+			Toast.makeText(context, "Failed to send Waypoints",
+					Toast.LENGTH_LONG).show();
+
 			throw new RosRuntimeException(e);
 		}
-		final vehicle_control.SendWaypointsRequest request = serviceClient
-				.newMessage();
-
-		request.setList(waypointList);
-
-		serviceClient
-				.call(request,
-						new ServiceResponseListener<vehicle_control.SendWaypointsResponse>() {
-							@Override
-							public void onSuccess(
-									vehicle_control.SendWaypointsResponse response) {
-								connectedNode
-										.getLog()
-										.info(String
-												.format("Returned number of waypoints %d",
-														response.getNumWaypts()));
-
-								Log.d("TEST", "Returned number of waypoints "
-										+ response.getNumWaypts());
-							}
-
-							@Override
-							public void onFailure(
-									org.ros.exception.RemoteException e) {
-								Log.d("Error", "WaypointClient - Running onFailure return Error");
-								
-								throw new RosRuntimeException(e);
-							}
-						});
-
-		// ServiceClient<beginner_tutorials.AddTwoIntsRequest,
-		// beginner_tutorials.AddTwoIntsResponse> serviceClient;
-		// try {
-		// serviceClient = connectedNode.newServiceClient("add_two_ints",
-		// beginner_tutorials.AddTwoInts._TYPE);
-		// } catch (ServiceNotFoundException e) {
-		// throw new RosRuntimeException(e);
-		// }
-		// final beginner_tutorials.AddTwoIntsRequest request = serviceClient
-		// .newMessage();
-		// request.setA(2);
-		// request.setB(2);
-		// serviceClient
-		// .call(request,
-		// new ServiceResponseListener<beginner_tutorials.AddTwoIntsResponse>()
-		// {
-		// @Override
-		// public void onSuccess(
-		// beginner_tutorials.AddTwoIntsResponse response) {
-		// connectedNode.getLog().info(
-		// String.format("%d + %d = %d",
-		// request.getA(), request.getB(),
-		// response.getSum()));
-		//
-		// Log.d("TEST", "Received back the value "
-		// + response.getSum());
-		// }
-		//
-		// @Override
-		// public void onFailure(
-		// org.ros.exception.RemoteException e) {
-		// throw new RosRuntimeException(e);
-		// }
-		// });
-
 	}
 
 	@Override

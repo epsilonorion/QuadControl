@@ -1,15 +1,15 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
-    <header android:fragment="com.qinetiq.quadcontrol.ROSPreferenceFragment"
+    <header android:fragment="com.qinetiq.quadcontrol.preferences.ROSPreferenceFragment"
             android:title="ROS"
             android:summary="Preferences for ROS components of the application">
       <extra android:name="resource" android:value="ros_preferences" />
     </header>
-    <header android:fragment="com.qinetiq.quadcontrol.VehiclePreferenceFragment"
+    <header android:fragment="com.qinetiq.quadcontrol.preferences.VehiclePreferenceFragment"
             android:title="Vehicle"
             android:summary="Preferences for vehicles used">
       <extra android:name="resource" android:value="vehicle_preferences" />
     </header>
-    <header android:fragment="com.qinetiq.quadcontrol.GeneralPreferenceFragment"
+    <header android:fragment="com.qinetiq.quadcontrol.preferences.GeneralPreferenceFragment"
             android:title="General"
             android:summary="Preferences for the general application">
       <extra android:name="resource" android:value="general_preferences" />
