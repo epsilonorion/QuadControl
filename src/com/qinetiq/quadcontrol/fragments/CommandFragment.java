@@ -24,6 +24,7 @@ import com.qinetiq.quadcontrol.StatusInfo;
 import com.qinetiq.quadcontrol.VehicleStatus;
 import com.qinetiq.quadcontrol.WaypointList;
 import com.qinetiq.quadcontrol.ros.CommandClient;
+import com.qinetiq.quadcontrol.ros.ROSVehicleBridge;
 import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
 import com.qinetiq.quadcontrol.ros.WaypointClient;
 import com.qinetiq.quadcontrol.util.Utils;
@@ -49,9 +50,7 @@ public class CommandFragment extends Fragment {
 
 	boolean ConnectedToVehicle = false;
 
-	private CommandClient commandClient;
-	private VehicleSubscriber vehSub;
-	private WaypointClient wayptClient;
+	private ROSVehicleBridge rosVehBridge;
 
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
@@ -59,7 +58,7 @@ public class CommandFragment extends Fragment {
 	private MainApplication mainApp;
 
 	private CommandFragment commandFragInstance;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -70,12 +69,12 @@ public class CommandFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 
-		mainApp = (MainApplication)getActivity().getApplicationContext();
+		mainApp = (MainApplication) getActivity().getApplicationContext();
 		wayptListObject = mainApp.getWayptList();
 		vehicleStatusObject = mainApp.getVehicleStatus();
-        
+
 		commandFragInstance = this;
-		
+
 		// Capture our button from layout
 		Button btnConnecToVehicle = (Button) getActivity().findViewById(
 				R.id.btnConnectVehicle);
@@ -138,21 +137,16 @@ public class CommandFragment extends Fragment {
 					mainApp.setNodeMainExecutor(nodeMainExecutor);
 					mainApp.setNodeConfiguration(nodeConfiguration);
 
-//					StatusFragment statusFragment = (StatusFragment) getFragmentManager()
-//							.findFragmentByTag(
-//									"android:switcher:" + R.id.pager + ":2");
-
 					StatusFragment statusFragment = mainApp.getStatusFrag();
-					
+
 					// Create nodes
-					vehSub = new VehicleSubscriber(vehicleStatusObject,
-							statusFragment, commandFragInstance, getActivity().getApplicationContext());
-					// wayptPub = new WaypointPublisher();
-					// testService = new ROSService();
-					wayptClient = new WaypointClient(wayptListObject, getActivity().getApplicationContext());
+					rosVehBridge = new ROSVehicleBridge(vehicleStatusObject,
+							wayptListObject, statusFragment,
+							commandFragInstance, getActivity()
+									.getApplicationContext());
 
 					// Execute Nodes
-					nodeMainExecutor.execute(vehSub, nodeConfiguration);
+					nodeMainExecutor.execute(rosVehBridge, nodeConfiguration);
 
 					// Give message and change button context
 					Toast.makeText(getActivity(), "Connecting to Vehicle",
@@ -174,7 +168,7 @@ public class CommandFragment extends Fragment {
 
 			case R.id.btnSendWaypoints:
 				if (mainApp.isConnectedToVehicle()) {
-					nodeMainExecutor.execute(wayptClient, nodeConfiguration);
+					rosVehBridge.sendWaypoints();
 
 					Toast.makeText(getActivity(), "Sending Waypoints",
 							Toast.LENGTH_SHORT).show();
@@ -186,13 +180,16 @@ public class CommandFragment extends Fragment {
 
 			case R.id.btnStartMission:
 				if (mainApp.isConnectedToVehicle()) {
-					commandClient = new CommandClient(0, getActivity());
-					Utils.setContext(getActivity());
+//					commandClient = new CommandClient(0, commandFragInstance,
+//							getActivity());
+//					Utils.setContext(getActivity());
+//
+//					nodeMainExecutor.execute(commandClient, nodeConfiguration);
+					
+					rosVehBridge.sendCommand(ROSVehicleBridge.START_COMMAND);
 
-					nodeMainExecutor.execute(commandClient, nodeConfiguration);
-
-//					Toast.makeText(getActivity(), "Starting Mission",
-//							Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Starting Mission",
+							Toast.LENGTH_SHORT).show();
 
 				} else {
 					Toast.makeText(getActivity(), "Vehicle Not Connected",
@@ -202,10 +199,13 @@ public class CommandFragment extends Fragment {
 
 			case R.id.btnPauseMission:
 				if (mainApp.isConnectedToVehicle()) {
-					commandClient = new CommandClient(1, getActivity());
+//					commandClient = new CommandClient(1, commandFragInstance,
+//							getActivity());
+//
+//					nodeMainExecutor.execute(commandClient, nodeConfiguration);
 
-					nodeMainExecutor.execute(commandClient, nodeConfiguration);
-
+					rosVehBridge.sendCommand(ROSVehicleBridge.PAUSE_COMMAND);
+					
 					Toast.makeText(getActivity(), "Pausing Mission",
 							Toast.LENGTH_SHORT).show();
 
@@ -218,10 +218,13 @@ public class CommandFragment extends Fragment {
 
 			case R.id.btnHaltMission:
 				if (mainApp.isConnectedToVehicle()) {
-					commandClient = new CommandClient(2, getActivity());
+//					commandClient = new CommandClient(2, commandFragInstance,
+//							getActivity());
+//
+//					nodeMainExecutor.execute(commandClient, nodeConfiguration);
 
-					nodeMainExecutor.execute(commandClient, nodeConfiguration);
-
+					rosVehBridge.sendCommand(ROSVehicleBridge.HALT_COMMAND);
+					
 					Toast.makeText(getActivity(), "Halting Mission",
 							Toast.LENGTH_SHORT).show();
 
@@ -233,9 +236,12 @@ public class CommandFragment extends Fragment {
 				break;
 			case R.id.btnReturnToBase:
 				if (mainApp.isConnectedToVehicle()) {
-					commandClient = new CommandClient(3, getActivity());
-
-					nodeMainExecutor.execute(commandClient, nodeConfiguration);
+//					commandClient = new CommandClient(3, commandFragInstance,
+//							getActivity());
+//
+//					nodeMainExecutor.execute(commandClient, nodeConfiguration);
+					
+					rosVehBridge.sendCommand(ROSVehicleBridge.RTB_COMMAND);
 
 					Toast.makeText(getActivity(), "Returning to Base",
 							Toast.LENGTH_SHORT).show();
@@ -251,20 +257,48 @@ public class CommandFragment extends Fragment {
 
 		}
 	};
-	
+
 	public Handler UIHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.getData().getInt("VEHICLE_CONNECT")) {
-			case 0: {
+			case 1: {
 				Button btnConnectToVehicle = (Button) getActivity()
 						.findViewById(R.id.btnConnectVehicle);
 				btnConnectToVehicle.setText("Connect To Vehicle");
 			}
 				break;
-			case 1: {
+			case 2: {
 				Button btnConnectToVehicle = (Button) getActivity()
 						.findViewById(R.id.btnConnectVehicle);
 				btnConnectToVehicle.setText("Disconnect From Vehicle");
+			}
+				break;
+			}
+
+			switch (msg.getData().getInt("WAYPOINT_SENT")) {
+			case 1: {
+				Toast.makeText(getActivity(), "Failed to send Waypoints",
+						Toast.LENGTH_SHORT).show();
+
+			}
+				break;
+			case 2: {
+				Toast.makeText(getActivity(), "Waypoints Received",
+						Toast.LENGTH_SHORT).show();
+			}
+				break;
+			}
+
+			switch (msg.getData().getInt("COMMAND_SENT")) {
+			case 1: {
+				Toast.makeText(getActivity(), "Failed to send Command",
+						Toast.LENGTH_SHORT).show();
+
+			}
+				break;
+			case 2: {
+				Toast.makeText(getActivity(), "Command Received",
+						Toast.LENGTH_SHORT).show();
 			}
 				break;
 			}

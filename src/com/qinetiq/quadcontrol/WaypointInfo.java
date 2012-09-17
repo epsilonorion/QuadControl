@@ -10,7 +10,10 @@
 
 package com.qinetiq.quadcontrol;
 
-public class WaypointInfo {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class WaypointInfo implements Parcelable {
 	private String name;
 	private double latitude;
 	private double longitude;
@@ -21,6 +24,10 @@ public class WaypointInfo {
 	private double tiltAngle;
 	private double yawFrom;
 	private double posAcc;
+
+	public WaypointInfo(Parcel in) {
+		readFromParcel(in);
+	}
 
 	public WaypointInfo() {
 		this.name = "EmptyMarker";
@@ -113,7 +120,7 @@ public class WaypointInfo {
 	public void setHoldTime(double holdTime) {
 		this.holdTime = holdTime;
 	}
-	
+
 	public double getPanAngle() {
 		return panAngle;
 	}
@@ -145,4 +152,50 @@ public class WaypointInfo {
 	public void setPosAcc(double posAcc) {
 		this.posAcc = posAcc;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		// Write each field into the parcel. They will be read back in same
+		// order from the function readFromParcel
+		dest.writeString(name);
+		dest.writeDouble(latitude);
+		dest.writeDouble(longitude);
+		dest.writeDouble(speedTo);
+		dest.writeDouble(altitude);
+		dest.writeDouble(holdTime);
+		dest.writeDouble(panAngle);
+		dest.writeDouble(tiltAngle);
+		dest.writeDouble(yawFrom);
+		dest.writeDouble(posAcc);
+	}
+
+	private void readFromParcel(Parcel in) {
+		// Write back each field in the order that it was written to the parcel
+		// from function writeToParcel
+		name = in.readString();
+		latitude = in.readDouble();
+		longitude = in.readDouble();
+		speedTo = in.readDouble();
+		altitude = in.readDouble();
+		holdTime = in.readDouble();
+		panAngle = in.readDouble();
+		tiltAngle = in.readDouble();
+		yawFrom = in.readDouble();
+		posAcc = in.readDouble();
+	}
+	
+	public final Parcelable.Creator<WaypointInfo> CREATOR = new Parcelable.Creator<WaypointInfo>() {
+        public WaypointInfo createFromParcel(Parcel in) {
+            return new WaypointInfo(in);
+        }
+
+        public WaypointInfo[] newArray(int size) {
+            return new WaypointInfo[size];
+        }
+    };
 }

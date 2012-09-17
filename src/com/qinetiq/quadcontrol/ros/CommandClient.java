@@ -19,8 +19,13 @@ import org.ros.node.NodeMain;
 import org.ros.node.service.ServiceClient;
 import org.ros.node.service.ServiceResponseListener;
 
+import com.qinetiq.quadcontrol.fragments.CommandFragment;
+
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,10 +33,13 @@ public class CommandClient implements NodeMain {
 	int Command = -1;
 
 	Context context;
+	private CommandFragment commandFragment;
 
-	public CommandClient(int Command, Context context) {
+	public CommandClient(int Command, CommandFragment commandFragment,
+			Context context) {
 		Log.d("CommandClient", "onCreate");
-		
+
+		this.commandFragment = commandFragment;
 		this.Command = Command;
 		this.context = context;
 	}
@@ -39,27 +47,37 @@ public class CommandClient implements NodeMain {
 	@Override
 	public void onError(Node node, Throwable throwable) {
 		Log.d("CommandClient", "onError");
+
+		// Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
+		// .show();
 		
-//		Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
-//				.show();
+		if (commandFragment != null) {
+			Handler uiHandler = commandFragment.UIHandler;
+
+			Bundle b = new Bundle();
+			b.putInt("COMMAND_SENT", 0);
+			Message msg = Message.obtain(uiHandler);
+			msg.setData(b);
+			msg.sendToTarget();
+		}
 	}
 
 	@Override
 	public void onShutdown(Node node) {
 		Log.d("CommandClient", "onShutdown");
-		
+
 	}
 
 	@Override
 	public void onShutdownComplete(Node node) {
 		Log.d("CommandClient", "onShutdownComplete");
-		
+
 	}
 
 	@Override
 	public void onStart(final ConnectedNode connectedNode) {
 		Log.d("CommandClient", "onStart");
-		
+
 		ServiceClient<vehicle_control.VehicleCommandRequest, vehicle_control.VehicleCommandResponse> serviceClient;
 
 		try {
@@ -85,23 +103,54 @@ public class CommandClient implements NodeMain {
 
 									Log.d("TEST", "Command received was "
 											+ response.getCommandReceived());
+									
+									if (commandFragment != null) {
+										Handler uiHandler = commandFragment.UIHandler;
+
+										Bundle b = new Bundle();
+										b.putInt("COMMAND_SENT", 1);
+										Message msg = Message.obtain(uiHandler);
+										msg.setData(b);
+										msg.sendToTarget();
+									}
 								}
 
 								@Override
 								public void onFailure(
 										org.ros.exception.RemoteException e) {
-//									Toast.makeText(context,
-//											"Failed to send Command",
-//											Toast.LENGTH_LONG).show();
+									// Toast.makeText(context,
+									// "Failed to send Command",
+									// Toast.LENGTH_LONG).show();
 									// throw new RosRuntimeException(e);
+									
+									if (commandFragment != null) {
+										Handler uiHandler = commandFragment.UIHandler;
+
+										Bundle b = new Bundle();
+										b.putInt("COMMAND_SENT", 0);
+										Message msg = Message.obtain(uiHandler);
+										msg.setData(b);
+										msg.sendToTarget();
+									}
 								}
 							});
 
 		} catch (ServiceNotFoundException e) {
-			//Looper.prepare();
-//			Toast.makeText(context, "Failed to send Command", Toast.LENGTH_LONG)
-//					.show();
+			// Looper.prepare();
+			// Toast.makeText(context, "Failed to send Command",
+			// Toast.LENGTH_LONG)
+			// .show();
 			// throw new RosRuntimeException(e);
+			
+			if (commandFragment != null) {
+				Handler uiHandler = commandFragment.UIHandler;
+
+				Bundle b = new Bundle();
+				b.putInt("COMMAND_SENT", 0);
+				Message msg = Message.obtain(uiHandler);
+				msg.setData(b);
+				msg.sendToTarget();
+			}
 		}
 
 	}

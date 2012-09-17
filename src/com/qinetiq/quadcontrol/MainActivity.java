@@ -119,7 +119,12 @@ public class MainActivity extends MapActivity {
 		
 		// Replace Map and Video Fragments dynamically
 		MapFragment mapFrag = new MapFragment();
+		Bundle mapFragBundle = new Bundle();
+		mapFragBundle.putParcelable("wayptList", wayptList);
+		mapFrag.setArguments(mapFragBundle);
 		transaction.replace(R.id.mapFragment, mapFrag);
+		
+		
 		MediaFragment videoFrag = new MediaFragment();
 		transaction.replace(R.id.mediaFragment, videoFrag);
 		transaction.commit();

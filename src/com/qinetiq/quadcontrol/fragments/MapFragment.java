@@ -57,6 +57,9 @@ import android.widget.ToggleButton;
 
 public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		OnDrawerCloseListener {
+	private View mView;
+
+	// MapView Variables
 	private MapView mapView = null;
 	private MapController mc = null;
 
@@ -81,21 +84,24 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 	private SharedPreferences prefs;
 
+	private static final int DEFAULT_ZOOM = 20;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.map_fragment, container, false);
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
+		mView = inflater.inflate(R.layout.map_fragment, container, false);
+		
+//		Bundle bundle = getArguments();
+//		if (bundle != null) {
+//			wayptList = bundle.getParcelable("wayptList");
+//		}
 
 		MainApplication mainApp = (MainApplication) getActivity()
 				.getApplicationContext();
-		wayptList = mainApp.getWayptList();
+		// wayptList = mainApp.getWayptList();
 		statusInfo = mainApp.getVehicleStatus();
-
+		wayptList = mainApp.getWayptList();
+		
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapFragment);
 
@@ -104,10 +110,10 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		// Grab preferences of the application
 		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		mapView = (MapView) getActivity().findViewById(R.id.mapView);
+		mapView = (MapView) mView.findViewById(R.id.mapView);
 		mapView.setBuiltInZoomControls(false);
 		mc = mapView.getController();
-		mc.setZoom(20);
+		mc.setZoom(DEFAULT_ZOOM);
 		mapView.setSatellite(satelliteOn);
 		List<Overlay> overlays = mapView.getOverlays();
 
@@ -122,7 +128,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		int markerHeight = marker.getIntrinsicHeight();
 		marker.setBounds(0, markerHeight, markerWidth, 0);
 
-		ImageView dragImage = (ImageView) getActivity().findViewById(R.id.drag);
+		ImageView dragImage = (ImageView) mView.findViewById(R.id.drag);
 
 		// Grab handle for WaypointsListFragment
 		// WaypointListFragment wayptListFragment = (WaypointListFragment)
@@ -143,15 +149,15 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		overlays.add(routeOverlay);
 		mapView.postInvalidate();
 
-		// Capture our button from layout
-		addButton = (ToggleButton) getActivity().findViewById(R.id.btnAdd);
-		deleteButton = (ToggleButton) getActivity()
+		// Capture our button from mView layout
+		addButton = (ToggleButton) mView.findViewById(R.id.btnAdd);
+		deleteButton = (ToggleButton) mView
 				.findViewById(R.id.btnDelete);
-		moveButton = (ToggleButton) getActivity().findViewById(R.id.btnMove);
-		modifyButton = (ToggleButton) getActivity()
+		moveButton = (ToggleButton) mView.findViewById(R.id.btnMove);
+		modifyButton = (ToggleButton) mView
 				.findViewById(R.id.btnModify);
-		newButton = (Button) getActivity().findViewById(R.id.btnNew);
-		clearButton = (Button) getActivity().findViewById(R.id.btnClear);
+		newButton = (Button) mView.findViewById(R.id.btnNew);
+		clearButton = (Button) mView.findViewById(R.id.btnClear);
 
 		addButton.setOnCheckedChangeListener(mCheckedListener);
 		deleteButton.setOnCheckedChangeListener(mCheckedListener);
@@ -160,14 +166,24 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		newButton.setOnClickListener(mClickListener);
 		clearButton.setOnClickListener(mClickListener);
 
-		sd = (SlidingDrawerWrapper) getActivity().findViewById(R.id.sg_below);
+		sd = (SlidingDrawerWrapper) mView.findViewById(R.id.sg_below);
 		sd.setOnDrawerOpenListener(this);
 		sd.setOnDrawerCloseListener(this);
+		
+		return mView;
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+		Log.d("Test", "List size " + wayptList.size());
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(true);
 	}
 
@@ -177,6 +193,11 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		super.onCreateOptionsMenu(menu, inflater);
 
 		inflater.inflate(R.menu.map_fragment_menu, menu);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	// ---when a menu item is selected---
@@ -335,6 +356,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	}
 
 	public void addWaypoint(WaypointInfo waypt) {
+		Log.d("Test", "JOSH3");
 		waypointsOverlay.addItem(waypt);
 	}
 
@@ -345,13 +367,15 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	public void clearWaypoints() {
 		waypointsOverlay.clearItems();
 
-		mapView.postInvalidate();
+		mapView.invalidate();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 
+		mapView.invalidate();
+		
 		myLocOverlay.enableCompass();
 		myLocOverlay.enableMyLocation();
 	}
@@ -405,7 +429,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		// Use Current Position as default Lat/Long coordinates
 		double myLocLat = 0.0;
 		double myLocLong = 0.0;
-		
+
 		GeoPoint myLoc = myLocOverlay.getMyLocation();
 		if (myLoc != null) {
 			myLocLat = myLoc.getLatitudeE6() / 1E6;
@@ -414,7 +438,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		final double defaultLatitude = myLocLat;
 		final double defaultLongitude = myLocLong;
-		
+
 		// Use preference values as default values for other components
 		final double defaultSpeed = Double.parseDouble(prefs.getString(
 				"default_speed", ""));
