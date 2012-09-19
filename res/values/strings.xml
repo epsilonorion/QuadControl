@@ -2,6 +2,9 @@
 
     <string name="app_name">QuadControl</string>
     <string name="menu_settings">Settings</string>
+    <string name="load_mission">Load Mission</string>
+    <string name="save_mission">Save Mission</string>
+    <string name="playback_mission">Playback Mission</string>
     <string name="vehicle_connect">Connect</string>
     <string name="title_activity_main">QuadControl</string>
     <item type="string" name="googlemaps_debug_key">0Ua5pucDQ2Bml67edum2ejesyVTAxQW5KewCWsQ</item>

@@ -1,9 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/vehicle_connect"
         android:title="@string/vehicle_connect"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         android:showAsAction="ifRoom|withText"
         android:icon="@drawable/icon_connection_off" />
+    
+    <item android:id="@+id/load_mission"
+        android:title="@string/load_mission"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    
+    <item android:id="@+id/save_mission"
+        android:title="@string/save_mission"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+    
+    <item android:id="@+id/playback_mission"
+        android:title="@string/playback_mission"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
     
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"

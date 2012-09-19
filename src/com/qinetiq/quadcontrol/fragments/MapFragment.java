@@ -119,7 +119,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		// Add vehicle overlay with R.id.quad drawable
 		vehicleOverlay = new VehicleOverlay(statusInfo, getActivity(),
-				R.drawable.icon_air_vehicle);
+				R.drawable.icon_vehicle);
 		overlays.add(vehicleOverlay);
 
 		// Add a Waypoint Overlay with marker to MapView

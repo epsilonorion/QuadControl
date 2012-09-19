@@ -11,6 +11,8 @@
 
 package com.qinetiq.quadcontrol;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URI;
 import java.util.List;
 import java.util.Vector;
@@ -21,6 +23,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
 import com.google.android.maps.MapActivity;
+import com.qinetiq.quadcontrol.filechooser.FileChooserDialog;
 import com.qinetiq.quadcontrol.fragments.CommandFragment;
 import com.qinetiq.quadcontrol.fragments.MapFragment;
 import com.qinetiq.quadcontrol.fragments.MediaFragment;
@@ -38,13 +41,18 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,11 +66,11 @@ import android.widget.Toast;
 
 import android.support.v4.view.ViewPager;
 
-public class MainActivity extends MapActivity {
+public class MainActivity extends MapActivity implements DialogInterface.OnClickListener{
 	private VehicleSubscriber vehSub;
 	private WaypointClient wayptClient;
 	VehicleStatus vehicleStatus;
-	
+
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
 
@@ -73,15 +81,17 @@ public class MainActivity extends MapActivity {
 	ViewFragmentAdapter mAdapter;
 	ViewPager mPager;
 	PageIndicator mIndicator;
-	
+
 	MainApplication mainApp;
-	
+
 	Menu menu;
+
+	private static final int PICKFILE_RESULT_CODE = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		// Set screen to always stay on
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -91,11 +101,11 @@ public class MainActivity extends MapActivity {
 		PreferenceManager.setDefaultValues(this, R.xml.ros_preferences, true);
 		PreferenceManager.setDefaultValues(this, R.xml.vehicle_preferences,
 				true);
-		
+
 		// Grab preferences of the application
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this);
-		
+
 		// Handle Theme Setup based on preference value.
 		if (prefs.getString("theme_list", null).compareTo("Black Theme") == 0) {
 			setTheme(R.style.AppThemeBlack);
@@ -107,24 +117,22 @@ public class MainActivity extends MapActivity {
 		// Create Objects to be used in various fragments and ROS Nodes
 		WaypointList wayptList = new WaypointList();
 		vehicleStatus = new VehicleStatus();
-		
+
 		// Setup Fragment Control for Application
 		FragmentManager fragmentManager = getFragmentManager();
 		FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-		mainApp = (MainApplication)getApplicationContext();
-        mainApp.setWayptList(wayptList);
-        mainApp.setVehicleStatus(vehicleStatus);
+		mainApp = (MainApplication) getApplicationContext();
+		mainApp.setWayptList(wayptList);
+		mainApp.setVehicleStatus(vehicleStatus);
 
-		
 		// Replace Map and Video Fragments dynamically
 		MapFragment mapFrag = new MapFragment();
 		Bundle mapFragBundle = new Bundle();
 		mapFragBundle.putParcelable("wayptList", wayptList);
 		mapFrag.setArguments(mapFragBundle);
 		transaction.replace(R.id.mapFragment, mapFrag);
-		
-		
+
 		MediaFragment videoFrag = new MediaFragment();
 		transaction.replace(R.id.mediaFragment, videoFrag);
 		transaction.commit();
@@ -138,9 +146,9 @@ public class MainActivity extends MapActivity {
 		fragments.add(commandFrag);
 		fragments.add(wayptListFrag);
 		fragments.add(statusFrag);
-		
+
 		mainApp.setStatusFrag(statusFrag);
-		
+
 		mAdapter = new ViewFragmentAdapter(getFragmentManager(), fragments);
 
 		mPager = (ViewPager) findViewById(R.id.pager);
@@ -154,7 +162,7 @@ public class MainActivity extends MapActivity {
 		addShowHideListener(R.id.btnMinMaxMapFragment, mapFrag, videoFrag);
 		addShowHideListener(R.id.btnMinMaxDataFragment, mapFrag, videoFrag);
 		addShowHideListener(R.id.btnMinMaxMediaFragment, mapFrag, videoFrag);
-		
+
 		// TODO Move to single class controlled by button connect
 		// Handle ROS Connect
 		nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory
@@ -168,7 +176,7 @@ public class MainActivity extends MapActivity {
 
 		nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
 
-		//wayptClient = new WaypointClient(wayptObject);
+		// wayptClient = new WaypointClient(wayptObject);
 
 		// nodeMainExecutor.execute(vehSub, nodeConfiguration);
 		// nodeMainExecutor.execute(wayptPub, nodeConfiguration);
@@ -179,7 +187,7 @@ public class MainActivity extends MapActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
-		
+
 		this.menu = menu;
 		return true;
 	}
@@ -192,11 +200,25 @@ public class MainActivity extends MapActivity {
 			startActivity(new Intent(this, PreferencesMenu.class));
 
 			return (true);
+		case R.id.load_mission:
+			FileChooserDialog openFileDialog = FileChooserDialog.openInstance(this);
+			openFileDialog.show(getFragmentManager(), "openFileDialogFragment");
+
+			return (true);
+		case R.id.save_mission:
+			FileChooserDialog saveFileDialog = FileChooserDialog.saveInstance(this);
+			saveFileDialog.show(getFragmentManager(), "saveFileDialogFragment");
+
+			return (true);
+		case R.id.playback_mission:
+			FileChooserDialog playbackFileDialog = FileChooserDialog.saveInstance(this);
+			playbackFileDialog.show(getFragmentManager(), "playbackFileDialogFragment");
+
+			return (true);
 		case R.id.vehicle_connect:
-			
+
 			return (true);
 		}
-		
 
 		return (super.onOptionsItemSelected(item));
 	}
@@ -247,19 +269,6 @@ public class MainActivity extends MapActivity {
 						splitView.setVisibility(View.GONE);
 
 						maximizeMapFragFlag = true;
-
-//						// vehSub = new VehicleSubscriber();
-////						 wayptPub = new WaypointPublisher();
-//						// testService = new ROSNode();
-//						StatusFragment statusFragment = (StatusFragment) getFragmentManager()
-//								.findFragmentByTag("android:switcher:" + R.id.pager + ":3");
-//						
-//						vehSub = new VehicleSubscriber(vehicleStatus, statusFragment);
-//						 nodeMainExecutor.execute(vehSub, nodeConfiguration);
-////						 nodeMainExecutor.execute(wayptPub,
-////						 nodeConfiguration);
-//						// nodeMainExecutor.execute(testService,
-//						// nodeConfiguration);
 					}
 					break;
 				case R.id.btnMinMaxDataFragment:
@@ -311,8 +320,6 @@ public class MainActivity extends MapActivity {
 						ft.hide(mapFrag);
 
 						maximizeVideoFragFlag = true;
-						
-						nodeMainExecutor.shutdown();
 					}
 					break;
 				}
@@ -320,22 +327,23 @@ public class MainActivity extends MapActivity {
 			}
 		});
 	}
-	
+
 	public void updateVehicleConnect() {
-//		MenuItem vehicleConnect = menu.getItem(R.id.vehicle_connect);
-//		if (mainApp.isConnectedToVehicle()) {
-//			
-//			vehicleConnect.setTitle("AYYIYI");
-//			vehicleConnect.setIcon(R.drawable.icon_connection_on);
-//		} else {
-//			vehicleConnect.setTitle("AYYIYI");
-//			vehicleConnect.setIcon(R.drawable.icon_connection_on);
-////			MenuItem vehicleConnectItem = (MenuItem) this.findViewById(R.id.vehicle_connect);
-////			vehicleConnectItem.setTitle("AYIYIYI");
-////			vehicleConnectItem.setIcon(R.drawable.icon_connection_off);
-//		}
+		// MenuItem vehicleConnect = menu.getItem(R.id.vehicle_connect);
+		// if (mainApp.isConnectedToVehicle()) {
+		//
+		// vehicleConnect.setTitle("AYYIYI");
+		// vehicleConnect.setIcon(R.drawable.icon_connection_on);
+		// } else {
+		// vehicleConnect.setTitle("AYYIYI");
+		// vehicleConnect.setIcon(R.drawable.icon_connection_on);
+		// // MenuItem vehicleConnectItem = (MenuItem)
+		// this.findViewById(R.id.vehicle_connect);
+		// // vehicleConnectItem.setTitle("AYIYIYI");
+		// // vehicleConnectItem.setIcon(R.drawable.icon_connection_off);
+		// }
 	}
-	
+
 	public Handler UIHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.getData().getInt("VEHICLE_CONNECT")) {
@@ -350,4 +358,15 @@ public class MainActivity extends MapActivity {
 			}
 		};
 	};
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		
+	}
+
+	public void getFilePath(String path) {
+		Toast.makeText(this, "Path is " + path,
+				Toast.LENGTH_SHORT).show();
+	}
 }
+
