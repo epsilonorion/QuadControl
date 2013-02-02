@@ -17,6 +17,8 @@ public class RouteOverlay extends Overlay {
 	private WaypointList wayptList;
 	private Paint paint;
 
+	private static final String TAG = "RouteOverlay";
+	
 	public RouteOverlay(WaypointList wayptList) {
 		this.wayptList = wayptList;
 		this.paint = new Paint();
@@ -25,7 +27,7 @@ public class RouteOverlay extends Overlay {
 	@Override
 	public void draw(Canvas canvas, MapView mapview, boolean shadow) {
 		super.draw(canvas, mapview, shadow);
-
+		
 		Drawable d;
 		paint.setAntiAlias(true);
 

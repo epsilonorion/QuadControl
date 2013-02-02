@@ -23,6 +23,7 @@ public class StatusInfo {
 	private double batteryStatus;
 	private int gpsStatus;
 	private int currWaypoint;
+	private String state;
 
 	public StatusInfo() {
 		this.vehicleName = "";
@@ -36,6 +37,7 @@ public class StatusInfo {
 		this.batteryStatus = 0;
 		this.gpsStatus = 0;
 		this.currWaypoint = 0;
+		this.state = "unknown";
 	}
 
 	public String getVehicleName() {
@@ -124,5 +126,13 @@ public class StatusInfo {
 
 	public void setCurrWaypoint(int currWaypoint) {
 		this.currWaypoint = currWaypoint;
+	}
+	
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 }

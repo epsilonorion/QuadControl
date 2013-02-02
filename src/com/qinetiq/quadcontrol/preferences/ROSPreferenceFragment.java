@@ -28,11 +28,11 @@ public class ROSPreferenceFragment extends PreferenceFragment implements
 	public static final String KEY_VEHICLE_LIST = "vehicle_type_list";
 	public static final String KEY_ROS_IP = "ros_IP";
 	public static final String KEY_ROS_PORT = "ros_port";
-	public static final String KEY_WAYPOINT_TIMEOUT = "waypoint_timeout";
+	public static final String KEY_CLIENT_TIMEOUT = "client_timeout";
 
 	private EditTextPreference mROSIP;
 	private EditTextPreference mROSPort;
-	private EditTextPreference mWaypointTimeout;
+	private EditTextPreference mClientTimeout;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -48,8 +48,8 @@ public class ROSPreferenceFragment extends PreferenceFragment implements
 				KEY_ROS_IP);
 		mROSPort = (EditTextPreference) getPreferenceScreen().findPreference(
 				KEY_ROS_PORT);
-		mWaypointTimeout = (EditTextPreference) getPreferenceScreen().findPreference(
-				KEY_WAYPOINT_TIMEOUT);
+		mClientTimeout = (EditTextPreference) getPreferenceScreen().findPreference(
+				KEY_CLIENT_TIMEOUT);
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class ROSPreferenceFragment extends PreferenceFragment implements
 		mROSIP.setSummary("Current IP is " + prefs.getString(KEY_ROS_IP, ""));
 		mROSPort.setSummary("Current port is "
 				+ prefs.getString(KEY_ROS_PORT, ""));
-		mWaypointTimeout.setSummary("Current timeout is "
-				+ prefs.getString(KEY_WAYPOINT_TIMEOUT, ""));
+		mClientTimeout.setSummary("Current timeout is "
+				+ prefs.getString(KEY_CLIENT_TIMEOUT, ""));
 
 		// Set up a listener whenever a key changes
 		PreferenceManager.getDefaultSharedPreferences(this.getActivity())
@@ -88,16 +88,13 @@ public class ROSPreferenceFragment extends PreferenceFragment implements
 		Log.d("Josh", "Changed");
 		
 		if (key.equals(KEY_ROS_IP)) {
-//			Utils.changeToTheme(getActivity(), Utils.THEME_DEFAULT);
 			mROSIP.setSummary("Current IP is "
 					+ sharedPreferences.getString(key, ""));
 		} else if (key.equals(KEY_ROS_PORT)) {
-//			Utils.changeToTheme(getActivity(), Utils.THEME_WHITE);
 			mROSPort.setSummary("Current port is "
 					+ sharedPreferences.getString(key, ""));
-		} else if (key.equals(KEY_WAYPOINT_TIMEOUT)) {
-//			Utils.changeToTheme(getActivity(), Utils.THEME_BLUE);
-			mWaypointTimeout.setSummary("Current timeout is "
+		} else if (key.equals(KEY_CLIENT_TIMEOUT)) {
+			mClientTimeout.setSummary("Current timeout is "
 					+ sharedPreferences.getString(key, ""));
 		}
 

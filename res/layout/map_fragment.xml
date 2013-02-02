@@ -6,17 +6,11 @@
     android:background="#767c9b" >
 
     <LinearLayout
+        android:id="@+id/mapContainer"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <com.google.android.maps.MapView
-            android:id="@+id/mapView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:apiKey="@string/googlemaps_linux_key"
-            android:clickable="true" >
-        </com.google.android.maps.MapView>
     </LinearLayout>
 
     <ImageView
@@ -30,6 +24,7 @@
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/slidingDrawerLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:baselineAligned="false"

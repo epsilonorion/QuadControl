@@ -9,6 +9,7 @@
         android:targetSdkVersion="13" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -25,7 +26,7 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name="com.qinetiq.quadcontrol"
+            android:name="com.qinetiq.quadcontrol.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" >

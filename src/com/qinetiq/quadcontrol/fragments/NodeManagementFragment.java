@@ -5,9 +5,6 @@ import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
-import com.qinetiq.quadcontrol.ros.CommandClient;
-import com.qinetiq.quadcontrol.ros.VehicleSubscriber;
-
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -15,8 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 public class NodeManagementFragment extends Fragment {
-	private VehicleSubscriber vehSub;
-	private CommandClient wayptPub;
 	private NodeMainExecutor nodeMainExecutor;
 	
 	@SuppressWarnings("unchecked")

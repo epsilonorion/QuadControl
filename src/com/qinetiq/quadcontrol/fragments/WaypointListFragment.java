@@ -20,7 +20,6 @@ import com.qinetiq.quadcontrol.WaypointList;
 
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -71,11 +70,8 @@ public class WaypointListFragment extends ListFragment {
 		registerForContextMenu(getListView());
 	}
 
-	public void onListItemClick(ListView parent, View v, int position, long id) {
-
-		Log.d("LIST", "Size is " + String.valueOf(list.size()));
-		Log.d("LIST", "Position clicked is " + String.valueOf(position));
-
+	public void onListItemClick(ListView parent, View v, int position, long id) 
+	{
 		// Obtain reference to MapFragment and use gotoLocation function
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapFragment);
@@ -134,30 +130,20 @@ public class WaypointListFragment extends ListFragment {
 
 	public void clearWaypoints() {
 		int count = list.size();
-		Log.d("SIZE", "Size is " + adapter.getCount());
 		
 		for (int i = 0; i < count; i++) {
-			Log.d("SIZE", "Remove item " + i);
 		    removeItem(0);
 		}
-		
-		Log.d("SIZE", "Finished clearing Waypoints");
 	}
 	
 	public void addItem(String str) {
 		list.add(str);
-		Log.d("LIST", String.valueOf(list.size()));
 		adapter.notifyDataSetChanged();
 	}
 
 	public void removeItem(int index) {
-		Log.d("SIZE", "Removing item " + index);
-		
 		list.remove(index);
 
-		Log.d("SIZE", "New size is " + list.size());
-		Log.d("SIZE", "Finished removing item " + index);
-		
 		adapter.notifyDataSetChanged();
 	}
 

@@ -45,8 +45,6 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 	// Function that updates each class/object that uses WaypointList for adding
 	// Waypt
 	public synchronized void updateClassesAdd(WaypointInfo waypt) {
-		Log.d("Test", "JOSH2");
-		
 		mapFragment.addWaypoint(waypt);
 		wayptListFragment.addWaypoint(waypt);
 	}
@@ -75,7 +73,6 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 
 	@Override
 	public synchronized boolean add(WaypointInfo waypt) {
-		Log.d("Test", "JOSH1");
 		updateClassesAdd(waypt);
 
 		return super.add(waypt);
@@ -125,10 +122,10 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 			out.writeDouble(waypt.getSpeedTo());
 			out.writeDouble(waypt.getAltitude());
 			out.writeDouble(waypt.getHoldTime());
-			out.writeDouble(waypt.getPanAngle());
-			out.writeDouble(waypt.getTiltAngle());
 			out.writeDouble(waypt.getYawFrom());
 			out.writeDouble(waypt.getPosAcc());
+			out.writeDouble(waypt.getPanAngle());
+			out.writeDouble(waypt.getTiltAngle());
 		}
 	}
 
@@ -149,10 +146,10 @@ public class WaypointList extends ArrayList<WaypointInfo> implements Parcelable 
 			waypt.setSpeedTo(in.readDouble());
 			waypt.setAltitude(in.readDouble());
 			waypt.setHoldTime(in.readDouble());
-			waypt.setPanAngle(in.readDouble());
-			waypt.setTiltAngle(in.readDouble());
 			waypt.setYawFrom(in.readDouble());
 			waypt.setPosAcc(in.readDouble());
+			waypt.setPanAngle(in.readDouble());
+			waypt.setTiltAngle(in.readDouble());
 
 			this.add(waypt);
 		}

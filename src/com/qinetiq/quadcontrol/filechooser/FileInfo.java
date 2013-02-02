@@ -7,9 +7,9 @@ public class FileInfo implements Comparable<FileInfo> {
 	private String path;
 	private String lastModified;
 
-	public FileInfo(String name, String date, String path, String lastModified) {
+	public FileInfo(String name, String data, String path, String lastModified) {
 		this.name = name;
-		this.data = date;
+		this.data = data;
 		this.path = path;
 		this.lastModified = lastModified;
 	}

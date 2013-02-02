@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.android.maps.GeoPoint;
@@ -32,13 +33,18 @@ public class VehicleOverlay extends Overlay {
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		super.draw(canvas, mapView, shadow);
 		
-		if (mainApp.isConnectedToVehicle()) {
+		if (mainApp.isConnectedToVehicle() || mainApp.isInPlayback()) {
+			//Log.d("Test", "Drawing Quad");
+			
 			StatusInfo statusInfo = vehicleStatusInfo.getVehicleStatus();
+			
 			GeoPoint geoPoint = new GeoPoint(
 					(int) (statusInfo.getLatitude() * 1E6),
 					(int) (statusInfo.getLongitude() * 1E6));
 			Point screenPoint = new Point();
 
+			//Log.d("Test", "Lat = " + geoPoint.getLatitudeE6() + " Long = " + geoPoint.getLongitudeE6());
+			
 			mapView.getProjection().toPixels(geoPoint, screenPoint);
 
 			Bitmap vehicleImage = BitmapFactory.decodeResource(
@@ -53,11 +59,4 @@ public class VehicleOverlay extends Overlay {
 		}
 
 	}
-
-	@Override
-	public boolean onTap(GeoPoint p, MapView mapView) {
-		// Handle tapping on the overlay here
-		return true;
-	}
-
 }

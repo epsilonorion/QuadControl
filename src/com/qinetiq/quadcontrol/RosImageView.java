@@ -26,6 +26,7 @@ public class RosImageView<T> extends ImageView implements NodeMain {
 
 	int count = 0;
 
+	public Boolean isRunning = false;
 	private String topicName;
 	private String messageType;
 	private MessageCallable<Bitmap, T> callable;
@@ -69,6 +70,7 @@ public class RosImageView<T> extends ImageView implements NodeMain {
 				post(new Runnable() {
 					@Override
 					public void run() {
+						isRunning = true;
 						// Add to queue
 						
 						// If length = 10
@@ -91,6 +93,7 @@ public class RosImageView<T> extends ImageView implements NodeMain {
 
 	@Override
 	public void onShutdown(Node node) {
+		isRunning = false;
 	}
 
 	@Override

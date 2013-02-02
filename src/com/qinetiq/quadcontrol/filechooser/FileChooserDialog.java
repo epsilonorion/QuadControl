@@ -14,81 +14,170 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class FileChooserDialog extends DialogFragment implements
-		android.view.View.OnClickListener {
+		OnClickListener {
 	public static String TAG = "FileChooserDialog";
 
-	private Button okButton;
 	private ListView fileList;
 	private File currentDir;
+	private File previousDir;
+
+	private ArrayList<File> forwardDir;
 	private FileArrayAdapter adapter;
 	private static Context context;
 
 	private TextView txtPath;
+	private TextView txtSaveName;
 
-	public static FileChooserDialog openInstance(Context c) {
-		context = c;
+	private String dialogType;
+	private String fileType;
 
-		String title = "Open CSV File";
-
-		FileChooserDialog f = new FileChooserDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		f.setArguments(args);
-		return f;
+	// Listener to be used for calling activity
+	public interface FileChooserDialogListener {
+		void onFinishFileChooserDialog(String type, String filePath,
+				String fileName);
 	}
 
-	public static FileChooserDialog saveInstance(Context c) {
+	public static FileChooserDialog newInstance(Context c, Bundle args) {
 		context = c;
 
-		String title = "Save CSV File";
-
-		FileChooserDialog f = new FileChooserDialog();
-		Bundle args = new Bundle();
-		args.putString("title", title);
-		f.setArguments(args);
-		return f;
+		FileChooserDialog fileChooser = new FileChooserDialog();
+		fileChooser.setArguments(args);
+		return fileChooser;
 	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		// Initialize Current Directory and other variables from bundle arguments
+		currentDir = new File(getArguments().getString("startDirectory"));
+		dialogType = getArguments().getString("dialogType");
+		fileType = getArguments().getString("fileType");
 		String title = getArguments().getString("title");
 
+		forwardDir = new ArrayList<File>();
+		
+		if ((dialogType == null) || (title == null)) {
+			Log.e(TAG, "Arguments for type and title are not set");
+			dismiss();
+		}
+
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
-		final View v = inflater.inflate(R.layout.file_chooser_dialog, null);
 
-		// Get copy of txtPath
+		View v = null;
+		Dialog myDialog = null;
+
+		// Choose type of layout based on type argument
+		if (dialogType.equals("open")) {
+			v = inflater.inflate(R.layout.file_chooser_open_dialog, null);
+
+			myDialog = new AlertDialog.Builder(getActivity())
+					.setTitle(title)
+					.setView(v)
+					.setCancelable(true)
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dismiss();
+								}
+							}).create();
+
+		} else if (dialogType.equals("save")) {
+			v = inflater.inflate(R.layout.file_chooser_save_dialog, null);
+
+			myDialog = new AlertDialog.Builder(getActivity())
+					.setTitle(title)
+					.setView(v)
+					.setCancelable(true)
+					.setPositiveButton("Save",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									if (txtSaveName.getText().toString()
+											.equals("")) {
+										Toast.makeText(context,
+												"Enter the name of the file",
+												Toast.LENGTH_SHORT).show();
+									} else {
+										FileChooserDialogListener activity = (FileChooserDialogListener) getActivity();
+										activity.onFinishFileChooserDialog(
+												dialogType, currentDir
+														.toString(),
+												txtSaveName.getText()
+														.toString());
+										dismiss();
+									}
+								}
+							})
+					.setNegativeButton("Cancel",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dismiss();
+								}
+							}).create();
+		}
+
+		if ((v == null) || (myDialog == null)) {
+			dismiss();
+			Log.e(TAG, "Dialog was not able to create the view or dialog");
+		}
+
+		// Create listener for back button
+		ImageButton btnBackDirectory = (ImageButton) v
+				.findViewById(R.id.btnBackDirectory);
+		btnBackDirectory.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!currentDir.getName().equalsIgnoreCase("sdcard")) {
+					forwardDir.add(currentDir);
+
+					currentDir = previousDir;
+					fill(currentDir);
+				}
+			}
+		});
+
+		// Create listener for back button
+		ImageButton btnForwardDirectory = (ImageButton) v
+				.findViewById(R.id.btnForwardDirectory);
+		btnForwardDirectory.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!forwardDir.isEmpty()) {
+					currentDir = forwardDir.get(forwardDir.size()-1);
+					forwardDir.remove(forwardDir.size()-1);
+					fill(currentDir);
+				}
+			}
+		});
+
+		// Get copy of txtPath and txtSaveName
 		txtPath = (TextView) v.findViewById(R.id.txtDirectoryPath);
+		txtSaveName = (TextView) v.findViewById(R.id.txtSaveName);
 
-		Dialog myDialog = new AlertDialog.Builder(getActivity())
-				.setTitle(title)
-				.setView(v)
-				.setCancelable(true)
-				.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Toast.makeText(context, "TEXT",
-										Toast.LENGTH_SHORT).show();
-								dismiss();
-							}
-						}).create();
-
+		// Create Listener and fill data for ListView
 		fileList = (ListView) v.findViewById(R.id.fileList);
 		fileList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -96,29 +185,47 @@ public class FileChooserDialog extends DialogFragment implements
 					int position, long id) {
 
 				// Get information about item clicked
-				FileInfo o = adapter.getItem(position);
+				FileInfo f = adapter.getItem(position);
 
-				// If item is a folder or parent directory, simply changed
-				// directory to
-				// said component, else take file as option clicked.
-				if (o.getData().equalsIgnoreCase("folder")
-						|| o.getData().equalsIgnoreCase("parent directory")) {
-					currentDir = new File(o.getPath());
+				// If item is a folder or parent directory, simply change
+				// directory to said component, else take file as option
+				// clicked.
+				if (f.getData().equalsIgnoreCase("folder")
+						|| f.getData().equalsIgnoreCase("parent directory")) {
+					currentDir = new File(f.getPath());
+					
+					// Check if new currentDir is on path of saved forwardDir
+					if (!forwardDir.contains(currentDir)) {
+						forwardDir.clear();
+					}
+					
 					fill(currentDir);
 				} else {
-					onFileClick(o);
+					if (dialogType.equals("save")) {
+						// Split and take first part of name before .
+						String[] fSplit = f.getName().split("\\.");
+
+						txtSaveName.setText(fSplit[0]);
+					} else {
+						onFileClick(f);
+					}
 				}
 
 			}
 		});
 
-		// Initialize Current Directory
-		currentDir = new File("/sdcard/");
-
 		// Fill List Activity with current directories items
 		fill(currentDir);
 
+		// Hide keyboard on start
+		myDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+		
 		return myDialog;
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 	}
 
 	@Override
@@ -136,15 +243,26 @@ public class FileChooserDialog extends DialogFragment implements
 		List<FileInfo> fls = new ArrayList<FileInfo>();
 		try {
 			for (File ff : dirs) {
-				if (ff.isDirectory())
+				if (ff.isDirectory()) {
 					dir.add(new FileInfo(ff.getName(), "Folder", ff
 							.getAbsolutePath(), new SimpleDateFormat(
 							"yyyy.MM.dd hh:mm aaa").format(ff.lastModified())));
-				else {
-					fls.add(new FileInfo(ff.getName(), "File Size: "
-							+ ff.length(), ff.getAbsolutePath(),
-							new SimpleDateFormat("yyyy.MM.dd hh:mm aaa")
-									.format(ff.lastModified())));
+				} else {
+					if (fileType.equals("")) { // If no fileType, show all
+						fls.add(new FileInfo(ff.getName(), "File Size: "
+								+ ff.length(), ff.getAbsolutePath(),
+								new SimpleDateFormat("yyyy.MM.dd hh:mm aaa")
+										.format(ff.lastModified())));
+					} else { // If fileType, only show those with it
+						if (ff.getName().endsWith("." + fileType)) {
+							fls.add(new FileInfo(
+									ff.getName(),
+									"File Size: " + ff.length(),
+									ff.getAbsolutePath(),
+									new SimpleDateFormat("yyyy.MM.dd hh:mm aaa")
+											.format(ff.lastModified())));
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -160,17 +278,26 @@ public class FileChooserDialog extends DialogFragment implements
 
 		// Add back up to Parent Directory to Top of List
 		if (!f.getName().equalsIgnoreCase("sdcard"))
-			dir.add(0,
-					new FileInfo("..", "Parent Directory", f.getParent(),
-							new SimpleDateFormat("yyyy.MM.dd hh:mm aaa")
-									.format(f.lastModified())));
+			previousDir = new File(f.getParent());
+
+		// // Add back up to Parent Directory to Top of List
+		// if (!f.getName().equalsIgnoreCase("sdcard"))
+		// dir.add(0,
+		// new FileInfo("..", "Parent Directory", f.getParent(),
+		// new SimpleDateFormat("yyyy.MM.dd hh:mm aaa")
+		// .format(f.lastModified())));
 
 		// Set List Adapter for ArrayList
 		adapter = new FileArrayAdapter(context, R.layout.file_view, dir);
 		fileList.setAdapter(adapter);
 	}
 
-	private void onFileClick(FileInfo o) {
-		((MainActivity) context).getFilePath(o.getPath());
+	// Pass information back to any listener using interface
+	private void onFileClick(FileInfo f) {
+		// Return input text to activity
+		FileChooserDialogListener activity = (FileChooserDialogListener) getActivity();
+		activity.onFinishFileChooserDialog(dialogType, currentDir.toString(),
+				f.getName());
+		this.dismiss();
 	}
 }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"/>
+
+    <LinearLayout
+        android:id="@+id/playbackButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/btnPlaybackSlower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_slower"
+            android:contentDescription="Slower button for Playback controls" />
+
+        <ImageButton
+            android:id="@+id/btnPlaybackPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_play"
+            android:contentDescription="Play button for Playback controls" />
+
+        <ImageButton
+            android:id="@+id/btnPlaybackStop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_stop"
+            android:contentDescription="Stop button for Playback controls" />
+
+        <ImageButton
+            android:id="@+id/btnPlaybackFaster"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_faster"
+            android:contentDescription="Faster button for Playback controls" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblMultiplier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/playbackButtons"
+        android:layout_alignRight="@+id/seekBar"
+        android:text="x1"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:typeface="normal" />
+
+</RelativeLayout>

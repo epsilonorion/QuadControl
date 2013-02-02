@@ -20,10 +20,10 @@ public class WaypointInfo implements Parcelable {
 	private double speedTo;
 	private double altitude;
 	private double holdTime;
-	private double panAngle;
-	private double tiltAngle;
 	private double yawFrom;
 	private double posAcc;
+	private double panAngle;
+	private double tiltAngle;
 
 	public WaypointInfo(Parcel in) {
 		readFromParcel(in);
@@ -36,10 +36,10 @@ public class WaypointInfo implements Parcelable {
 		this.speedTo = 0;
 		this.altitude = 0;
 		this.holdTime = 0;
-		this.panAngle = 0;
-		this.tiltAngle = 0;
 		this.yawFrom = 0;
 		this.posAcc = 0;
+		this.panAngle = 0;
+		this.tiltAngle = 0;
 	}
 
 	// Typical Constructor for Ground Vehicle
@@ -51,26 +51,26 @@ public class WaypointInfo implements Parcelable {
 		this.speedTo = speedTo;
 		this.altitude = 0;
 		this.holdTime = 0;
-		this.panAngle = 0;
-		this.tiltAngle = 0;
 		this.yawFrom = 0;
 		this.posAcc = 0;
+		this.panAngle = 0;
+		this.tiltAngle = 0;
 	}
 
 	// Typical Constructor for Air Vehicle
 	public WaypointInfo(String name, double latitude, double longitude,
-			double speedTo, double altitude, double holdTime, double panAngle,
-			double tiltAngle, double yawFrom, double posAcc) {
+			double speedTo, double altitude, double holdTime, double yawFrom, double posAcc, double panAngle,
+			double tiltAngle) {
 		this.name = name;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.speedTo = speedTo;
 		this.altitude = altitude;
 		this.holdTime = holdTime;
-		this.panAngle = panAngle;
-		this.tiltAngle = tiltAngle;
 		this.yawFrom = yawFrom;
 		this.posAcc = posAcc;
+		this.panAngle = panAngle;
+		this.tiltAngle = tiltAngle;
 	}
 
 	public String getName() {
@@ -168,10 +168,10 @@ public class WaypointInfo implements Parcelable {
 		dest.writeDouble(speedTo);
 		dest.writeDouble(altitude);
 		dest.writeDouble(holdTime);
-		dest.writeDouble(panAngle);
-		dest.writeDouble(tiltAngle);
 		dest.writeDouble(yawFrom);
 		dest.writeDouble(posAcc);
+		dest.writeDouble(panAngle);
+		dest.writeDouble(tiltAngle);
 	}
 
 	private void readFromParcel(Parcel in) {
@@ -183,10 +183,10 @@ public class WaypointInfo implements Parcelable {
 		speedTo = in.readDouble();
 		altitude = in.readDouble();
 		holdTime = in.readDouble();
-		panAngle = in.readDouble();
-		tiltAngle = in.readDouble();
 		yawFrom = in.readDouble();
 		posAcc = in.readDouble();
+		panAngle = in.readDouble();
+		tiltAngle = in.readDouble();
 	}
 	
 	public final Parcelable.Creator<WaypointInfo> CREATOR = new Parcelable.Creator<WaypointInfo>() {

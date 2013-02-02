@@ -15,23 +15,10 @@ package com.qinetiq.quadcontrol.fragments;
 
 import java.util.List;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
-import com.google.android.maps.MyLocationOverlay;
-import com.google.android.maps.Overlay;
-import com.qinetiq.quadcontrol.MainApplication;
-import com.qinetiq.quadcontrol.R;
-import com.qinetiq.quadcontrol.RouteOverlay;
-import com.qinetiq.quadcontrol.VehicleOverlay;
-import com.qinetiq.quadcontrol.VehicleStatus;
-import com.qinetiq.quadcontrol.WaypointInfo;
-import com.qinetiq.quadcontrol.WaypointList;
-import com.qinetiq.quadcontrol.WaypointsOverlay;
-import com.qinetiq.quadcontrol.util.SlidingDrawerWrapper;
-
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -47,13 +34,30 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SlidingDrawer.OnDrawerCloseListener;
 import android.widget.SlidingDrawer.OnDrawerOpenListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapController;
+import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
+import com.google.android.maps.Overlay;
+import com.qinetiq.quadcontrol.MainApplication;
+import com.qinetiq.quadcontrol.R;
+import com.qinetiq.quadcontrol.RouteOverlay;
+import com.qinetiq.quadcontrol.VehicleOverlay;
+import com.qinetiq.quadcontrol.StatusInfo;
+import com.qinetiq.quadcontrol.VehicleStatus;
+import com.qinetiq.quadcontrol.WaypointInfo;
+import com.qinetiq.quadcontrol.WaypointList;
+import com.qinetiq.quadcontrol.WaypointsOverlay;
+import com.qinetiq.quadcontrol.util.SlidingDrawerWrapper;
 
 public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		OnDrawerCloseListener {
@@ -64,11 +68,12 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	private MapController mc = null;
 
 	private WaypointList wayptList = null;
-	private VehicleStatus statusInfo = null;
+	private VehicleStatus vehicleStatusInfo = null;
 
 	private MyLocationOverlay myLocOverlay = null;
 	private WaypointsOverlay waypointsOverlay = null;
 	private VehicleOverlay vehicleOverlay = null;
+	private RouteOverlay routeOverlay = null;
 
 	boolean satelliteOn = true;
 	boolean maximizedOn = false;
@@ -86,31 +91,54 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 	private static final int DEFAULT_ZOOM = 20;
 
+	MainApplication mainApp;
+
+	private static int countInstance = 1;
+
+	public static MapFragment newInstance(WaypointList wayptList) {
+		MapFragment frag = new MapFragment();
+		Bundle args = new Bundle();
+		args.putInt("instanceNumber", countInstance);
+		args.putParcelable("wayptList", wayptList);
+		frag.setArguments(args);
+		countInstance++;
+		return frag;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		mView = inflater.inflate(R.layout.map_fragment, container, false);
-		
-//		Bundle bundle = getArguments();
-//		if (bundle != null) {
-//			wayptList = bundle.getParcelable("wayptList");
-//		}
 
-		MainApplication mainApp = (MainApplication) getActivity()
-				.getApplicationContext();
+		// Bundle bundle = getArguments();
+		// if (bundle != null) {
+		// wayptList = bundle.getParcelable("wayptList");
+		// }
+
+		mainApp = (MainApplication) getActivity().getApplicationContext();
 		// wayptList = mainApp.getWayptList();
-		statusInfo = mainApp.getVehicleStatus();
+		vehicleStatusInfo = mainApp.getVehicleStatus();
 		wayptList = mainApp.getWayptList();
-		
-		MapFragment mapFragment = (MapFragment) getFragmentManager()
-				.findFragmentById(R.id.mapFragment);
+
+		MapFragment mapFragment = this;
 
 		wayptList.setupMapFragment(mapFragment);
 
 		// Grab preferences of the application
 		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-		mapView = (MapView) mView.findViewById(R.id.mapView);
+		if (mapView == null) {
+			mapView = new MapView(getActivity(),
+					getString(R.string.googlemaps_linuxrelease_key));
+			mapView.setClickable(true);
+		} else {
+			((ViewGroup) mapView.getParent()).removeView(mapView);
+		}
+		ViewGroup mapContainer = (ViewGroup) mView
+				.findViewById(R.id.mapContainer);
+		mapContainer.addView(mapView);
+
+		// mapView = (MapView) mView.findViewById(R.id.mapView);
 		mapView.setBuiltInZoomControls(false);
 		mc = mapView.getController();
 		mc.setZoom(DEFAULT_ZOOM);
@@ -118,44 +146,51 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		List<Overlay> overlays = mapView.getOverlays();
 
 		// Add vehicle overlay with R.id.quad drawable
-		vehicleOverlay = new VehicleOverlay(statusInfo, getActivity(),
-				R.drawable.icon_vehicle);
-		overlays.add(vehicleOverlay);
+		if (vehicleOverlay == null) {
+			vehicleOverlay = new VehicleOverlay(vehicleStatusInfo,
+					getActivity(), R.drawable.icon_vehicle);
+			overlays.add(vehicleOverlay);
+		}
 
-		// Add a Waypoint Overlay with marker to MapView
-		Drawable marker = getResources().getDrawable(R.drawable.marker);
-		int markerWidth = marker.getIntrinsicWidth();
-		int markerHeight = marker.getIntrinsicHeight();
-		marker.setBounds(0, markerHeight, markerWidth, 0);
+		if (waypointsOverlay == null) {
+			// Add a Waypoint Overlay with marker to MapView
+			Drawable marker = getResources().getDrawable(R.drawable.marker);
+			int markerWidth = marker.getIntrinsicWidth();
+			int markerHeight = marker.getIntrinsicHeight();
+			marker.setBounds(0, markerHeight, markerWidth, 0);
 
-		ImageView dragImage = (ImageView) mView.findViewById(R.id.drag);
+			ImageView dragImage = (ImageView) mView.findViewById(R.id.drag);
 
-		// Grab handle for WaypointsListFragment
-		// WaypointListFragment wayptListFragment = (WaypointListFragment)
-		// getFragmentManager()
-		// .findFragmentById(R.id.waypointListFragment);
-		waypointsOverlay = new WaypointsOverlay(marker, dragImage,
-				getActivity(), wayptList);
-		overlays.add(waypointsOverlay);
+			// Grab handle for WaypointsListFragment
+			// WaypointListFragment wayptListFragment = (WaypointListFragment)
+			// getFragmentManager()
+			// .findFragmentById(R.id.waypointListFragment);
+			waypointsOverlay = new WaypointsOverlay(marker, dragImage,
+					getActivity(), wayptList);
+			overlays.add(waypointsOverlay);
+		}
 
-		// Add Mylocation Overlay to MapView
-		myLocOverlay = new MyLocationOverlay(getActivity(), mapView);
-		myLocOverlay.enableMyLocation();
-		myLocOverlay.enableCompass();
-		overlays.add(myLocOverlay);
+		if (myLocOverlay == null) {
+			// Add Mylocation Overlay to MapView
+			myLocOverlay = new MyLocationOverlay(getActivity(), mapView);
+			myLocOverlay.enableMyLocation();
+			myLocOverlay.enableCompass();
+			overlays.add(myLocOverlay);
+		}
 
-		// Add Route Overlay to MapView
-		RouteOverlay routeOverlay = new RouteOverlay(wayptList);
-		overlays.add(routeOverlay);
+		if (routeOverlay == null) {
+			// Add Route Overlay to MapView
+			routeOverlay = new RouteOverlay(wayptList);
+			overlays.add(routeOverlay);
+		}
+
 		mapView.postInvalidate();
 
 		// Capture our button from mView layout
 		addButton = (ToggleButton) mView.findViewById(R.id.btnAdd);
-		deleteButton = (ToggleButton) mView
-				.findViewById(R.id.btnDelete);
+		deleteButton = (ToggleButton) mView.findViewById(R.id.btnDelete);
 		moveButton = (ToggleButton) mView.findViewById(R.id.btnMove);
-		modifyButton = (ToggleButton) mView
-				.findViewById(R.id.btnModify);
+		modifyButton = (ToggleButton) mView.findViewById(R.id.btnModify);
 		newButton = (Button) mView.findViewById(R.id.btnNew);
 		clearButton = (Button) mView.findViewById(R.id.btnClear);
 
@@ -169,14 +204,28 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		sd = (SlidingDrawerWrapper) mView.findViewById(R.id.sg_below);
 		sd.setOnDrawerOpenListener(this);
 		sd.setOnDrawerCloseListener(this);
-		
+
 		return mView;
+	}
+
+	public void hideSlidingDrawer() {
+		LinearLayout slidingLayout = (LinearLayout) mView
+				.findViewById(R.id.slidingDrawerLayout);
+
+		slidingLayout.setVisibility(View.GONE);
+	}
+
+	public void showSlidingDrawer() {
+		LinearLayout slidingLayout = (LinearLayout) mView
+				.findViewById(R.id.slidingDrawerLayout);
+
+		slidingLayout.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		Log.d("Test", "List size " + wayptList.size());
 	}
 
@@ -232,6 +281,21 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 				Toast.makeText(getActivity(),
 						"Current Position is not detected", Toast.LENGTH_LONG)
 						.show();
+			}
+			return true;
+
+		case R.id.vehiclelocation:
+			if (mainApp.isConnectedToVehicle() || mainApp.isInPlayback()) {
+
+				StatusInfo statusInfo = vehicleStatusInfo.getVehicleStatus();
+
+				GeoPoint vehLoc = new GeoPoint(
+						(int) (statusInfo.getLatitude() * 1E6),
+						(int) (statusInfo.getLongitude() * 1E6));
+				mc.animateTo(vehLoc);
+			} else {
+				Toast.makeText(getActivity(), "Vehicle position unknown.",
+						Toast.LENGTH_LONG).show();
 			}
 			return true;
 		}
@@ -356,8 +420,8 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 	}
 
 	public void addWaypoint(WaypointInfo waypt) {
-		Log.d("Test", "JOSH3");
 		waypointsOverlay.addItem(waypt);
+		mapView.postInvalidate();
 	}
 
 	public void modifyWaypoint(int wayptPos, WaypointInfo waypt) {
@@ -375,7 +439,7 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 		super.onResume();
 
 		mapView.invalidate();
-		
+
 		myLocOverlay.enableCompass();
 		myLocOverlay.enableMyLocation();
 	}
@@ -386,6 +450,10 @@ public class MapFragment extends Fragment implements OnDrawerOpenListener,
 
 		myLocOverlay.disableCompass();
 		myLocOverlay.disableMyLocation();
+	}
+
+	public void update() {
+		mapView.invalidate();
 	}
 
 	public void onDrawerClosed() {

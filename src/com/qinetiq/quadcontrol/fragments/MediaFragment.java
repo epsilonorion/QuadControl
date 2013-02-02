@@ -12,6 +12,7 @@
 package com.qinetiq.quadcontrol.fragments;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 import org.ros.android.BitmapFromCompressedImage;
 import org.ros.node.NodeConfiguration;
@@ -23,9 +24,14 @@ import com.qinetiq.quadcontrol.R;
 import com.qinetiq.quadcontrol.RosImageView;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,24 +42,42 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 
 	View view;
 	final Uri MediaBaseUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-	private Uri playableUri = null;
-	private RosImageView<sensor_msgs.CompressedImage> image;
+//	private Uri playableUri = null;
+	private RosImageView<sensor_msgs.CompressedImage> rosImageView;
 
 	MediaPlayer mediaPlayer;
-	SurfaceView surfaceView;
+	SurfaceView videoView;
 	SurfaceHolder surfaceHolder;
+	ImageView playbackView;
+
+	public ImageView getImageView() {
+		return playbackView;
+	}
+
 	boolean pausing = false;
 
 	private NodeMainExecutor nodeMainExecutor;
 	private NodeConfiguration nodeConfiguration;
 
 	private MainApplication mainApp;
+	
+	private static int countInstance = 1 ;
+
+	public static MediaFragment newInstance() {
+		MediaFragment frag = new MediaFragment();
+        Bundle args = new Bundle();
+        args.putInt("instanceNumber", countInstance);
+        frag.setArguments(args);
+        countInstance++ ;
+        return frag;
+    }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -62,20 +86,25 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 
 		this.view = inflater.inflate(R.layout.media_fragment, container, false);
 
-		view.findViewById(R.id.rosview).setVisibility(View.GONE);
+		// Hide rosView and videoView
+		rosImageView = (RosImageView<sensor_msgs.CompressedImage>) this.view
+				.findViewById(R.id.rosImageView);
+		videoView = (SurfaceView) view.findViewById(R.id.videoView);
+		playbackView = (ImageView) view.findViewById(R.id.playbackView);
+		
+		rosImageView.setVisibility(View.GONE);
+		videoView.setVisibility(View.GONE);
+		playbackView.setVisibility(View.VISIBLE);
+		
+//		playableUri = Uri.withAppendedPath(MediaBaseUri, "187");
+//		Log.d("Video", playableUri.toString());
 
-		playableUri = Uri.withAppendedPath(MediaBaseUri, "187");
-		Log.d("Video", playableUri.toString());
-
-		surfaceView = (SurfaceView) view.findViewById(R.id.surfaceview);
-		surfaceHolder = surfaceView.getHolder();
+		
+		surfaceHolder = videoView.getHolder();
 		surfaceHolder.addCallback(this);
 		// surfaceHolder.setFixedSize(176, 144);
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		// getActivity().getWindow().setFormat(PixelFormat.UNKNOWN);
-
-		image = (RosImageView<sensor_msgs.CompressedImage>) this.view
-				.findViewById(R.id.rosview);
 
 		mainApp = (MainApplication) getActivity().getApplicationContext();
 
@@ -101,93 +130,33 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 		mainActivity = (MainActivity) getActivity();
 		switch (item.getItemId()) {
 
-		case R.id.ShowSnapshotsItem:
-			if (mediaPlayer != null) {
-				mediaPlayer.stop();
-				mediaPlayer.release();
-				mediaPlayer = null;
-				surfaceHolder.removeCallback(this);
-			}
-			view.findViewById(R.id.surfaceview).setVisibility(View.GONE);
+		case R.id.ShowStreamItem:
+			showRosView();
 
 			Toast.makeText(getActivity(), "Showing Snapshots",
 					Toast.LENGTH_SHORT).show();
 
 			if (mainApp.isConnectedToVehicle()) {
+				// Start Node
 				nodeMainExecutor = mainApp.getNodeMainExecutor();
 				nodeConfiguration = mainApp.getNodeConfiguration();
-				nodeMainExecutor.shutdownNodeMain(image);
-				image.setVisibility(View.VISIBLE);
+				nodeMainExecutor.shutdownNodeMain(rosImageView);
+				
+				rosImageView.setVisibility(View.VISIBLE);
 
-				image.setTopicName("/camera/image_raw_throttled/compressed");
-				image.setMessageType(sensor_msgs.CompressedImage._TYPE);
-				image.setMessageToBitmapCallable(new BitmapFromCompressedImage());
-				nodeMainExecutor.execute(image, nodeConfiguration);
+				rosImageView.setTopicName("/image/stream/compressed");
+				rosImageView.setMessageType(sensor_msgs.CompressedImage._TYPE);
+				rosImageView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+				nodeMainExecutor.execute(rosImageView, nodeConfiguration);
 			}
 
-			return true;
-
-		case R.id.Show320VideoItem:
-			if (mediaPlayer != null) {
-				mediaPlayer.stop();
-				mediaPlayer.release();
-				mediaPlayer = null;
-				surfaceHolder.removeCallback(this);
-			}
-			view.findViewById(R.id.surfaceview).setVisibility(View.GONE);
-
-			Toast.makeText(getActivity(), "Showing 320x240 Video Stream",
-					Toast.LENGTH_SHORT).show();
-
-			if (mainApp.isConnectedToVehicle()) {
-				nodeMainExecutor = mainApp.getNodeMainExecutor();
-				nodeConfiguration = mainApp.getNodeConfiguration();
-				nodeMainExecutor.shutdownNodeMain(image);
-				image.setVisibility(View.VISIBLE);
-
-				image.setTopicName("/camera_out/image_raw_320x240/compressed");
-				image.setMessageType(sensor_msgs.CompressedImage._TYPE);
-				image.setMessageToBitmapCallable(new BitmapFromCompressedImage());
-				nodeMainExecutor.execute(image, nodeConfiguration);
-			}
-			return true;
-
-		case R.id.Show640VideoItem:
-			if (mediaPlayer != null) {
-				mediaPlayer.stop();
-				mediaPlayer.release();
-				mediaPlayer = null;
-				surfaceHolder.removeCallback(this);
-			}
-			view.findViewById(R.id.surfaceview).setVisibility(View.GONE);
-
-			Toast.makeText(getActivity(), "Showing 640x480 Video Stream",
-					Toast.LENGTH_SHORT).show();
-
-			if (mainApp.isConnectedToVehicle()) {
-				nodeMainExecutor = mainApp.getNodeMainExecutor();
-				nodeConfiguration = mainApp.getNodeConfiguration();
-				nodeMainExecutor.shutdownNodeMain(image);
-				image.setVisibility(View.VISIBLE);
-
-				image.setTopicName("/camera_out/image_raw_640x480/compressed");
-				image.setMessageType(sensor_msgs.CompressedImage._TYPE);
-				image.setMessageToBitmapCallable(new BitmapFromCompressedImage());
-				nodeMainExecutor.execute(image, nodeConfiguration);
-			}
 			return true;
 
 		case R.id.LoadVideoItem:
 			Toast.makeText(getActivity(), "Loading Video", Toast.LENGTH_SHORT)
 					.show();
 
-			// Kill all other video
-			nodeMainExecutor = mainApp.getNodeMainExecutor();
-			nodeMainExecutor.shutdownNodeMain(image);
-			image.setVisibility(View.GONE);
-
-			// Show Surface View
-			surfaceView.setVisibility(View.VISIBLE);
+			showVideoView();
 
 			mediaPlayer = new MediaPlayer();
 
@@ -230,6 +199,51 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 		return false;
 	}
 
+	public void showRosView() {
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+			mediaPlayer.release();
+			mediaPlayer = null;
+			surfaceHolder.removeCallback(this);
+		}
+		view.findViewById(R.id.playbackView).setVisibility(View.GONE);
+		view.findViewById(R.id.videoView).setVisibility(View.GONE);
+		rosImageView.setVisibility(View.VISIBLE);
+	}
+
+	public void showVideoView() {
+		// Kill all other video
+		if (rosImageView.isRunning) {
+			nodeMainExecutor = mainApp.getNodeMainExecutor();
+			nodeMainExecutor.shutdownNodeMain(rosImageView);
+		}
+
+		rosImageView.setVisibility(View.GONE);
+		view.findViewById(R.id.playbackView).setVisibility(View.GONE);
+		
+		// Show Surface View
+		videoView.setVisibility(View.VISIBLE);
+	}
+	
+	public void showPlaybackView() {
+		// Kill all other video
+		if (rosImageView.isRunning) {
+			nodeMainExecutor = mainApp.getNodeMainExecutor();
+			nodeMainExecutor.shutdownNodeMain(rosImageView);
+		}
+		
+		if (mediaPlayer != null) {
+			mediaPlayer.stop();
+			mediaPlayer.release();
+			mediaPlayer = null;
+			surfaceHolder.removeCallback(this);
+		}
+
+		videoView.setVisibility(View.GONE);
+		rosImageView.setVisibility(View.GONE);
+		view.findViewById(R.id.playbackView).setVisibility(View.VISIBLE);
+	}
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -237,7 +251,6 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 	}
 
 	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -269,8 +282,87 @@ public class MediaFragment extends Fragment implements SurfaceHolder.Callback {
 	}
 
 	public void surfaceDestroyed(SurfaceHolder arg0) {
-		// TODO Auto-generated method stub
 
+	}
+
+	public Handler UIHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.getData().getInt("PLAYBACK_IMAGE")) {
+			case 1: {
+				BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(
+						playbackView);
+				bitmapWorkerTask.execute(msg.getData().getString("IMAGE_PATH"));
+			}
+				break;
+			}
+		};
+	};
+
+	private class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+		private final WeakReference<ImageView> imageViewReference;
+
+		public BitmapWorkerTask(ImageView playbackView) {
+			// Use a WeakReference to ensure the ImageView can be garbage
+			// collected
+			imageViewReference = new WeakReference<ImageView>(playbackView);
+		}
+
+		// Decode image in background.
+		@Override
+		protected Bitmap doInBackground(String... params) {
+			Log.d("MediaFragment", "String is /sdcard/QuadControl/playback/"
+					+ params[0]);
+
+			String bitmapString = "/sdcard/QuadControl/playback/" + params[0];
+
+			return decodeSampledBitmapFromResource(bitmapString, 200, 200);
+		}
+
+		// Once complete, see if ImageView is still around and set bitmap.
+		@Override
+		protected void onPostExecute(Bitmap bitmap) {
+			if (imageViewReference != null && bitmap != null) {
+				final ImageView playbackView = imageViewReference.get();
+				if (playbackView != null) {
+					playbackView.setImageBitmap(bitmap);
+				}
+			}
+		}
+
+		public Bitmap decodeSampledBitmapFromResource(String bitmapString,
+				int reqWidth, int reqHeight) {
+
+			// First decode with inJustDecodeBounds=true to check dimensions
+			final BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inJustDecodeBounds = true;
+			BitmapFactory.decodeFile(bitmapString);
+
+			// Calculate inSampleSize
+			options.inSampleSize = calculateInSampleSize(options, reqWidth,
+					reqHeight);
+
+			// Decode bitmap with inSampleSize set
+			options.inJustDecodeBounds = false;
+			return BitmapFactory.decodeFile(bitmapString, options);
+		}
+
+		public int calculateInSampleSize(BitmapFactory.Options options,
+				int reqWidth, int reqHeight) {
+			// Raw height and width of image
+			final int height = options.outHeight;
+			final int width = options.outWidth;
+			int inSampleSize = 1;
+
+			if (height > reqHeight || width > reqWidth) {
+				if (width > height) {
+					inSampleSize = Math.round((float) height
+							/ (float) reqHeight);
+				} else {
+					inSampleSize = Math.round((float) width / (float) reqWidth);
+				}
+			}
+			return inSampleSize;
+		}
 	}
 
 }

@@ -42,6 +42,7 @@ public class StatusFragment extends Fragment {
 	TextView BatteryStatus;
 	TextView GPSStatus;
 	TextView CurrWaypointStatus;
+	TextView StateStatus;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +68,6 @@ public class StatusFragment extends Fragment {
 				R.id.lblAltitudeStatusValue);
 		HeadingStatus = (TextView) getActivity().findViewById(
 				R.id.lblHeadingStatusValue);
-
 		SpeedStatus = (TextView) getActivity().findViewById(
 				R.id.lblSpeedStatusValue);
 		PanAngleStatus = (TextView) getActivity().findViewById(
@@ -76,11 +76,12 @@ public class StatusFragment extends Fragment {
 				R.id.lblTiltAngleStatusValue);
 		BatteryStatus = (TextView) getActivity().findViewById(
 				R.id.lblBatteryStatusValue);
-
 		GPSStatus = (TextView) getActivity()
 				.findViewById(R.id.lblGPStatusValue);
 		CurrWaypointStatus = (TextView) getActivity().findViewById(
 				R.id.lblCurrWaypointStatusValue);
+		StateStatus = (TextView) getActivity().findViewById(
+				R.id.lblStateValue);
 		
 		if (vehicleStatus != null) {
 			StatusInfo vehicleStatusInfo = vehicleStatus.getVehicleStatus();
@@ -101,6 +102,9 @@ public class StatusFragment extends Fragment {
 			GPSStatus.setText("" + vehicleStatusInfo.getGpsStatus());
 			CurrWaypointStatus
 					.setText("" + vehicleStatusInfo.getCurrWaypoint());
+			
+			StateStatus
+			.setText("" + vehicleStatusInfo.getState());
 		}
 	}
 
@@ -124,6 +128,9 @@ public class StatusFragment extends Fragment {
 			GPSStatus.setText("" + vehicleStatusInfo.getGpsStatus());
 			CurrWaypointStatus
 					.setText("" + vehicleStatusInfo.getCurrWaypoint());
+			
+			StateStatus
+			.setText("" + vehicleStatusInfo.getState());
 		}
 	}
 

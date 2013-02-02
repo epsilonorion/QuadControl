@@ -18,11 +18,11 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Messages" >
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="5"
             android:dialogTitle="Enter the desired number of tries (number)"
-            android:key="waypoint_timeout"
-            android:summary="Click to enter the desired timeout for the Waypoint Publisher"
-            android:title="Timeout for Waypoint Publisher" />
+            android:key="client_timeout"
+            android:summary="Click to enter the desired timeout for Command and Waypoint Clients"
+            android:title="Timeout for Command and Waypoint Clients" />
     </PreferenceCategory>
 
 </PreferenceScreen>

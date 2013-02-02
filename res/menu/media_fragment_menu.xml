@@ -4,21 +4,14 @@
     <item
         android:id="@+id/mediamenu"
         android:showAsAction="ifRoom|withText"
+        android:orderInCategory="2"
         android:title="Media Settings">
 
         <!-- "file" submenu -->
         <menu>
             <item
-                android:id="@+id/ShowSnapshotsItem"
-                android:title="Show Snapshots">
-            </item>
-            <item
-                android:id="@+id/Show320VideoItem"
-                android:title="Show 320x240 Video">
-            </item>
-            <item
-                android:id="@+id/Show640VideoItem"
-                android:title="Show 640x480 Video">
+                android:id="@+id/ShowStreamItem"
+                android:title="Show Stream">
             </item>
             <item
                 android:id="@+id/LoadVideoItem"

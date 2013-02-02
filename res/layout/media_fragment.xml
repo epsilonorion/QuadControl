@@ -3,15 +3,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/playbackView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="" 
+        android:src="@drawable/splash"/>
+
     <com.qinetiq.quadcontrol.RosImageView
-        android:id="@+id/rosview"
+        android:id="@+id/rosImageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
 
     <SurfaceView
-        android:id="@+id/surfaceview"
+        android:id="@+id/videoView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"

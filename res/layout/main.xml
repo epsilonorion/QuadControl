@@ -1,114 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/overallLayout"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:layout_height="fill_parent" >
 
-    <RelativeLayout
-        android:id="@+id/mapFragmentContainer"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:baselineAligned="false" >
+        android:orientation="horizontal" >
 
-        <FrameLayout
-            android:id="@+id/mapFragment"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/mapFragmentContainer"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:baselineAligned="false" >
 
-            <!-- Preview: layout=@layout/MapFragment -->
-        </FrameLayout>
-
-        <ImageButton
-            android:id="@+id/btnMinMaxMapFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/maximizesmall"
-            android:contentDescription="MinMax Button for the Map Fragment" >
-        </ImageButton>
-    </RelativeLayout>
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="fill_parent"
-        android:background="#ff000000" >
-    </View>
-
-    <LinearLayout
-        android:id="@+id/splitFragmentContainer"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="2"
-        android:baselineAligned="false"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/dataFragmentContainer"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:orientation="vertical" >
-
-            <com.viewpagerindicator.TitlePageIndicator
-                android:id="@+id/indicator"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dip" />
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/pager"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" >
-            </android.support.v4.view.ViewPager>
-
-            <ImageButton
-                android:id="@+id/btnMinMaxDataFragment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:background="@drawable/maximizesmall"
-                android:contentDescription="MinMax Button for the Video Fragment" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#ff000000" >
-        </View>
-
-        <RelativeLayout
-            android:id="@+id/mediaFragmentContainer"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:orientation="vertical" >
-
             <FrameLayout
-                android:id="@+id/mediaFragment"
+                android:id="@+id/mapFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:baselineAligned="false" >
+
+                <!-- Preview: layout=@layout/MapFragment -->
             </FrameLayout>
 
             <ImageButton
-                android:id="@+id/btnMinMaxMediaFragment"
+                android:id="@+id/btnMinMaxMapFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:background="@drawable/maximizesmall"
-                android:contentDescription="MinMax Button for the Media Fragment" />
-
+                android:contentDescription="MinMax Button for the Map Fragment" >
+            </ImageButton>
         </RelativeLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="#ff000000" >
+        </View>
+
+        <LinearLayout
+            android:id="@+id/splitFragmentContainer"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="2"
+            android:baselineAligned="false"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/dataFragmentContainer"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:baselineAligned="false"
+                android:orientation="vertical" >
+
+                <com.viewpagerindicator.TitlePageIndicator
+                    android:id="@+id/indicator"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dip" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/pager"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+                </android.support.v4.view.ViewPager>
+
+                <ImageButton
+                    android:id="@+id/btnMinMaxDataFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:background="@drawable/maximizesmall"
+                    android:contentDescription="MinMax Button for the Video Fragment" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#ff000000" >
+            </View>
+
+            <RelativeLayout
+                android:id="@+id/mediaFragmentContainer"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:baselineAligned="false"
+                android:orientation="vertical" >
+
+                <FrameLayout
+                    android:id="@+id/mediaFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:baselineAligned="false" >
+                </FrameLayout>
+
+                <ImageButton
+                    android:id="@+id/btnMinMaxMediaFragment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/maximizesmall"
+                    android:contentDescription="MinMax Button for the Media Fragment" />
+            </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/playbackControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/Translucent"
+        android:visibility="gone" >
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" />
+
+        <LinearLayout
+            android:id="@+id/playbackButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/seekBar"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/btnPlaybackSlower"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_slower"
+                android:contentDescription="Slower button for Playback controls" />
+
+            <ImageButton
+                android:id="@+id/btnPlaybackPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_pause"
+                android:contentDescription="Play button for Playback controls" />
+
+            <ImageButton
+                android:id="@+id/btnPlaybackStop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_stop"
+                android:contentDescription="Stop button for Playback controls" />
+
+            <ImageButton
+                android:id="@+id/btnPlaybackFaster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_faster"
+                android:contentDescription="Faster button for Playback controls" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblMultiplier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/playbackButtons"
+            android:layout_alignRight="@+id/seekBar"
+            android:text="x1"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:typeface="normal" />
+    </RelativeLayout>
+
+</RelativeLayout>

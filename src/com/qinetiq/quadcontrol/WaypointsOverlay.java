@@ -53,7 +53,9 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 	private Boolean deleteWayptFlag = false;
 	private Boolean moveWayptFlag = false;
 	private Boolean modifyWayptFlag = false;
-	
+
+	private Boolean isPinch = false;
+
 	private int indexCount = 0;
 
 	WaypointList wayptList;
@@ -82,36 +84,48 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 			return true;
 		}
 
-		if (addWayptFlag) {
-			// Given current type of waypoint setup, the first added waypoint
-			// will be the Return-To-Base (RTB) Waypoint. Each waypoint after
-			// this will be called Waypoint. This is to be modified when more
-			// advanced waypoint schemes are used.
+		if (isPinch) {
+			return false;
+		} else {
+			if (p != null) {
+				if (addWayptFlag) {
+					// Given current type of waypoint setup, the first added
+					// waypoint will be the Return-To-Base (RTB) Waypoint. Each
+					// waypoint after this will be called Waypoint. This is to
+					// be modified when more advanced waypoint schemes are used.
 
-			String label = "";
+					String label = "";
 
-			if (wayptList.size() == 0) {
-				label = "RTB";
+					if (wayptList.size() == 0) {
+						label = "RTB";
+					} else {
+						label = "Waypoint";
+					}
+
+					// Add waypoint
+					// Structure Setup WaypointInfo Object
+					WaypointInfo waypt = new WaypointInfo(label,
+							p.getLatitudeE6() / 1E6, p.getLongitudeE6() / 1E6,
+							Double.parseDouble(prefs.getString("default_speed",
+									"25")), Double.parseDouble(prefs.getString(
+									"default_altitude", "10")),
+							Double.parseDouble(prefs.getString(
+									"default_hold_time", "10")),
+							Double.parseDouble(prefs.getString(
+									"default_yaw_from", "0")),
+							Double.parseDouble(prefs.getString(
+									"default_position_accuracy", "0")),
+							Double.parseDouble(prefs.getString(
+									"default_pan_position", "100")),
+							Double.parseDouble(prefs.getString(
+									"default_tilt_position", "100")));
+
+					// Add waypoint to waypoint list object
+					wayptList.add(waypt);
+				}
 			} else {
-				label = "Waypoint";
+				return false;
 			}
-
-			// Add waypoint
-			// Structure Setup WaypointInfo Object
-			WaypointInfo waypt = new WaypointInfo(
-					label,
-					p.getLatitudeE6() / 1E6,
-					p.getLongitudeE6() / 1E6,
-					Double.parseDouble(prefs.getString("default_speed", "25")),
-					Double.parseDouble(prefs.getString("default_altitude", "10")),
-					Double.parseDouble(prefs.getString("default_hold_time", "10")),
-					Double.parseDouble(prefs.getString("default_pan_position",
-							"100")), Double.parseDouble(prefs.getString(
-							"default_tilt_position", "100")), 
-							Double.parseDouble(prefs.getString("default_yaw_from", "0")), 0);
-
-			// Add waypoint to waypoint list object
-			wayptList.add(waypt);
 		}
 
 		return true;
@@ -119,21 +133,14 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 	@Override
 	protected boolean onTap(int index) {
-		// if (super.onTap(index)) {
-		// return true;
-		// }
-		if (deleteWayptFlag) {
-		} else {
-			GeoPoint p = overlayItemList.get(index).getPoint();
-			String latlng = String.valueOf(p.getLatitudeE6() / 1E6) + ","
-					+ String.valueOf(p.getLongitudeE6() / 1E6);
+		GeoPoint p = overlayItemList.get(index).getPoint();
+		String latlng = String.valueOf(p.getLatitudeE6() / 1E6) + ","
+				+ String.valueOf(p.getLongitudeE6() / 1E6);
 
-			Toast.makeText(
-					context,
-					overlayItemList.get(index).getTitle() + ", Waypoint "
-							+ index + " at " + latlng, Toast.LENGTH_SHORT)
-					.show();
-		}
+		Toast.makeText(
+				context,
+				overlayItemList.get(index).getTitle() + ", Waypoint " + index
+						+ " at " + latlng, Toast.LENGTH_SHORT).show();
 
 		return true;
 	}
@@ -144,6 +151,15 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 		final int action = event.getAction();
 		final int x = (int) event.getX();
 		final int y = (int) event.getY();
+
+		// Check if zooming with pinch
+		int fingers = event.getPointerCount();
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			isPinch = false; // Touch DOWN, don't know if it's a pinch yet
+		}
+		if (event.getAction() == MotionEvent.ACTION_MOVE && fingers == 2) {
+			isPinch = true; // Two fingers, def a pinch
+		}
 
 		// If modifying waypoint has been selected, setup to move the waypoint.
 		if (moveWayptFlag) {
@@ -182,24 +198,24 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 				GeoPoint pt = mapView.getProjection().fromPixels(
 						x - xDragTouchOffset, y - yDragTouchOffset);
-				
+
 				WaypointInfo modifiedMarker = wayptList.get(indexDrag);
-				
+
 				modifiedMarker.setLatitude(pt.getLatitudeE6() / 1E6);
 				modifiedMarker.setLongitude(pt.getLongitudeE6() / 1E6);
-				
-//				OverlayItem toDrop = new OverlayItem(pt, inDrag.getTitle(),
-//						inDrag.getSnippet());
+
+				// OverlayItem toDrop = new OverlayItem(pt, inDrag.getTitle(),
+				// inDrag.getSnippet());
 
 				// Modified Waypoint
-//				overlayItemList.add(toDrop);
-				wayptList.modify(indexDrag,  modifiedMarker);
+				// overlayItemList.add(toDrop);
+				wayptList.modify(indexDrag, modifiedMarker);
 				populate();
 
 				String latlng = String.valueOf(pt.getLatitudeE6() / 1E6) + ","
 						+ String.valueOf(pt.getLongitudeE6() / 1E6);
 
-				//wayptListFragment.modifyItem(indexCount, latlng);
+				// wayptListFragment.modifyItem(indexCount, latlng);
 				inDrag = null;
 				result = true;
 			}
@@ -216,8 +232,8 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 							result = true;
 							wayptList.remove(count);
 						} else if (modifyWayptFlag) {
-							OpenDialog(count);
-						} 
+							OpenModifyDialog(count);
+						}
 						break;
 					}
 					count++;
@@ -235,7 +251,7 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 		lp.setMargins(x - xDragImageOffset - xDragTouchOffset, y
 				- yDragImageOffset - yDragTouchOffset, 0, 0);
-		
+
 		dragImage.setLayoutParams(lp);
 	}
 
@@ -256,12 +272,12 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 		overlayItemList.remove(index);
 		populate();
 	}
-	
+
 	public void clearItems() {
 		overlayItemList.clear();
 		populate();
 	}
-	
+
 	public void modifyItem(int index, WaypointInfo waypt) {
 		GeoPoint p = new GeoPoint((int) (waypt.getLatitude() * 1E6),
 				(int) (waypt.getLongitude() * 1E6));
@@ -271,7 +287,7 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 				+ String.valueOf(p.getLongitudeE6());
 
 		OverlayItem modifiedItem = new OverlayItem(p, title, snippet);
-		
+
 		Log.d("Test", "Modify size is " + overlayItemList.size());
 		Log.d("Test", "Modify Index is " + index);
 		overlayItemList.add(index, modifiedItem);
@@ -323,12 +339,12 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 	public Boolean getModifyWayptFlag() {
 		return modifyWayptFlag;
 	}
-	
+
 	public void setModifyWayptFlag(Boolean modifyWayptFlag) {
 		this.modifyWayptFlag = modifyWayptFlag;
 	}
-	
-	private void OpenDialog(final int index) {
+
+	private void OpenModifyDialog(final int index) {
 		AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
 		alert.setTitle("Modify Waypoint Info");
@@ -343,11 +359,11 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 
 		Log.d("Test", "Size of wayptList " + wayptList.size());
 		Log.d("Test", "Size of overlayList " + overlayItemList.size());
-		
+
 		Log.d("Test", "Index being used " + index);
 		// Use tapped waypoint as default values
 		WaypointInfo modifiedMarker = wayptList.get(index);
-		
+
 		final String defaultName = modifiedMarker.getName();
 		final double defaultLatitude = modifiedMarker.getLatitude();
 		final double defaultLongitude = modifiedMarker.getLongitude();
@@ -468,7 +484,7 @@ public class WaypointsOverlay extends ItemizedOverlay<OverlayItem> {
 				Log.d("TEST", "Index value is " + index);
 				// Add waypoint to waypoint list object
 				overlayItemList.remove(index);
-				wayptList.modify(index,  waypt);
+				wayptList.modify(index, waypt);
 				populate();
 			}
 		});
